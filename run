@@ -1,0 +1,5 @@
+python -m flask run --host=0.0.0.0 --port=5000 --debug
+cloudflared tunnel --url http://localhost:5000
+
+
+cloudflared tunnel run filsha

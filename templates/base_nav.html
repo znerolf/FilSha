@@ -1,0 +1,423 @@
+<!-- ======= Header ======= -->
+<header id="header" class="header fixed-top d-flex align-items-center">
+  <div class="d-flex align-items-center">
+    <i class="bi bi-list toggle-sidebar-btn me-3" onclick="toggleSidebar()"></i>
+    <a href="{{ url_for('fileshare') }}" class="logo d-flex align-items-center">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" alt="" class="me-2" style="height: 32px;">
+      <span class="d-none d-lg-block" style="font-size: 1.2rem;">FilSha</span>
+    </a>
+  </div>
+
+  <nav class="header-nav ms-auto">
+    <ul class="d-flex align-items-center mb-0">
+      <!-- Notification Nav -->
+      <li class="nav-item dropdown">
+        <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+          <i class="bi bi-bell"></i>
+          {% if unread_notification_count > 0 %}
+          <span class="badge bg-primary badge-number">{{ unread_notification_count }}</span>
+          {% endif %}
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+          <li class="dropdown-header">
+            {% if unread_notification_count > 0 %}
+              You have {{ unread_notification_count }} new notifications
+            {% else %}
+              No new notifications
+            {% endif %}
+            <a href="{{ url_for('notifications') }}"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          
+          <div style="max-height: 250px; overflow-y: auto;">
+          {% if user_notifications %}
+            {% for notification in user_notifications %}
+            {% if loop.index <= 4 %}
+            <li class="notification-item {% if not notification.is_read %}bg-light{% endif %}">
+              <i class="{{ get_notification_icon(notification.type) }}"></i>
+              <div>
+                <h4>{{ notification.title }}</h4>
+                <p>{{ notification.message }}</p>
+                <p>{{ notification.created_at|time_ago }}</p>
+              </div>
+              {% if not notification.is_read %}
+              <a href="{{ url_for('mark_notification_read_route', notification_id=notification.id) }}" class="badge rounded-pill bg-primary p-2 ms-4">Mark Read</a>
+              {% endif %}
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            {% endif %}
+            {% endfor %}
+          {% else %}
+            <li class="notification-item">
+              <div class="text-center text-muted">
+                <p>No notifications yet</p>
+              </div>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+          {% endif %}
+          </div>
+          
+          <li class="dropdown-footer">
+            <a href="{{ url_for('notifications') }}">Show all notifications</a>
+            {% if unread_notification_count > 0 %}
+            | <a href="{{ url_for('mark_all_notifications_read_route') }}">Mark all read</a>
+            {% endif %}
+          </li>
+        </ul>
+      </li><!-- End Notification Nav -->
+      
+      <!-- Messages Nav -->
+      <li class="nav-item dropdown">
+        <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+          <i class="bi bi-chat-left-text"></i>
+          <span class="badge bg-success badge-number">{{ unread_message_count }}</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+          <li class="dropdown-header">
+            You have {{ unread_message_count }} new messages
+            <a href="{{ url_for('messages') }}"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          {% for message in latest_messages %}
+          <li class="message-item">
+            <a href="{{ url_for('messages') }}" class="d-flex align-items-center p-2">
+              <img src="{{ url_for('profile_picture', user_id=message.sender_id) }}" alt="{{ message.sender_first_name }} {{ message.sender_last_name }}" class="rounded-circle me-2" width="40" height="40">
+              <div class="flex-grow-1">
+                <h6 class="mb-0">{{ message.sender_first_name }} {{ message.sender_last_name }}</h6>
+                <p class="text-muted small mb-0">{{ message.message | truncate(30) }}</p>
+                <small class="text-muted">{{ message.created_at | time_ago }}</small>
+              </div>
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          {% endfor %}
+          <li class="dropdown-footer">
+            <a href="{{ url_for('messages') }}" class="text-center d-block">Show all messages</a>
+          </li>
+        </ul>
+      </li><!-- End Messages Nav -->
+      
+      <!-- Profile Nav -->
+      <li class="nav-item dropdown pe-3">
+        <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+          <img src="{{ url_for('profile_picture', user_id=current_user.id) }}" alt="Profile" class="rounded-circle" width="40" height="40">
+          <span class="dropdown-toggle ps-2">{{ user_full_name }}</span>
+          <i class="bi bi-chevron-down d-md-none ms-1"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+          <li class="dropdown-header">
+            <h6>{{ user_full_name }}</h6>
+            <span>@{{ current_user.username }}</span>
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center" href="{{ url_for('userprofile') }}">
+              <i class="bi bi-person"></i>
+              <span>My Profile</span>
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center" href="{{ url_for('userprofile') }}">
+              <i class="bi bi-gear"></i>
+              <span>Account Settings</span>
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center" href="{{ url_for('userhelp') }}">
+              <i class="bi bi-question-circle"></i>
+              <span>Need Help?</span>
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center" href="{{ url_for('logout') }}">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Sign Out</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Profile Nav -->
+    </ul>
+  </nav>
+</header>
+
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar">
+  <ul class="sidebar-nav" id="sidebar-nav">
+    <li class="nav-item">
+      <a class="nav-link {% if request.endpoint != 'userdashboard' %}collapsed{% endif %}" href="{{ url_for('userdashboard') }}">
+        <i class="bi bi-grid"></i>
+        <span>Dashboard</span>
+      </a>
+    </li><!-- End Dashboard Nav -->
+
+    <li class="nav-item">
+      <a class="nav-link {% if request.endpoint != 'fileshare' %}collapsed{% endif %}" href="{{ url_for('fileshare') }}">
+        <i class="bi bi-share"></i>
+        <span>FileShare</span>
+      </a>
+    </li><!-- End FileShare Nav -->
+
+    <li class="nav-item">
+      <a class="nav-link {% if request.endpoint != 'userprofile' %}collapsed{% endif %}" href="{{ url_for('userprofile') }}">
+        <i class="bi bi-person"></i>
+        <span>Profile</span>
+      </a>
+    </li><!-- End Profile Page Nav -->
+
+    <li class="nav-item">
+      <a class="nav-link {% if request.endpoint != 'userhistory' %}collapsed{% endif %}" href="{{ url_for('userhistory') }}">
+        <i class="bi bi-clock-history"></i>
+        <span>History</span>
+      </a>
+    </li><!-- End Contact Page Nav -->
+
+    <li class="nav-item">
+      <a class="nav-link {% if request.endpoint != 'userhelp' %}collapsed{% endif %}" href="{{ url_for('userhelp') }}">
+        <i class="bi bi-headset"></i>
+        <span>Help Desk</span>
+      </a>
+    </li><!-- End Contact Page Nav -->
+
+    <li class="nav-item">
+      <a class="nav-link {% if request.endpoint != 'messages' %}collapsed{% endif %}" href="{{ url_for('messages') }}">
+        <i class="bi bi-envelope"></i>
+        <span>Messages</span>
+      </a>
+    </li><!-- End Contact Page Nav -->
+
+    {% if not has_user_rated(current_user.id) %}
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#ratingModal">
+        <i class="bi bi-star"></i>
+        <span>Rate System</span>
+      </a>
+    </li>
+    {% endif %}
+  </ul>
+</aside><!-- End Sidebar -->
+
+<!-- Rating Modal -->
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="ratingModalLabel">
+          <i class="bi bi-star-fill me-2"></i>Rate Your Experience
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-4">
+          <h6 class="mb-3">How would you rate our system?</h6>
+          <div class="rating-stars mb-3">
+            {% for i in range(1, 6) %}
+            <i class="bi bi-star rating-star" data-rating="{{ i }}" style="cursor: pointer; font-size: 2.5rem; color: #dee2e6; margin: 0 5px;"></i>
+            {% endfor %}
+          </div>
+          <small class="text-muted">Click on the stars to rate</small>
+        </div>
+        
+        <div class="mb-3">
+          <label for="ratingComment" class="form-label">Optional Feedback</label>
+          <textarea class="form-control" id="ratingComment" placeholder="Share your thoughts about the system (max 200 characters)" rows="3" maxlength="200"></textarea>
+          <div class="form-text text-end">
+            <span id="charCount">0</span>/200 characters
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Maybe Later</button>
+        <button type="button" class="btn btn-primary" id="submitRatingBtn" disabled>
+          <i class="bi bi-send me-1"></i>Submit Rating
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Favicons -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="{{ url_for('static', filename='img/favicon.png') }}" rel="icon">
+<link href="{{ url_for('static', filename='img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+
+<!-- Google Fonts -->
+<link href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+<!--Chartjs-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Bootstrap -->
+<link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- Template Main CSS File -->
+<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+
+<script src="{{ url_for('static', filename='js/user/spark-md5.min.js') }}"></script>
+
+  <!-- SweetAlert2 CSS and JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+<style>
+.rating-star:hover,
+.rating-star.active {
+    color: #ffc107 !important;
+    transform: scale(1.1);
+    transition: all 0.2s ease;
+}
+
+.rating-stars {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#ratingComment:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.modal-header {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.rating-star');
+    const submitBtn = document.getElementById('submitRatingBtn');
+    const ratingComment = document.getElementById('ratingComment');
+    const charCount = document.getElementById('charCount');
+    let selectedRating = 0;
+    
+    // Character counter for comment
+    ratingComment.addEventListener('input', function() {
+        charCount.textContent = this.value.length;
+    });
+    
+    // Star rating interaction
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = parseInt(this.getAttribute('data-rating'));
+            selectedRating = rating;
+            
+            // Update star display
+            stars.forEach((s, index) => {
+                if (index < rating) {
+                    s.classList.add('active');
+                    s.classList.remove('bi-star');
+                    s.classList.add('bi-star-fill');
+                } else {
+                    s.classList.remove('active');
+                    s.classList.remove('bi-star-fill');
+                    s.classList.add('bi-star');
+                }
+            });
+            
+            // Enable submit button
+            submitBtn.disabled = false;
+        });
+        
+        // Hover effects
+        star.addEventListener('mouseenter', function() {
+            const rating = parseInt(this.getAttribute('data-rating'));
+            stars.forEach((s, index) => {
+                if (index < rating) {
+                    s.style.color = '#ffc107';
+                }
+            });
+        });
+        
+        star.addEventListener('mouseleave', function() {
+            stars.forEach((s, index) => {
+                if (!s.classList.contains('active')) {
+                    s.style.color = '#dee2e6';
+                }
+            });
+        });
+    });
+    
+    // Submit rating
+    submitBtn.addEventListener('click', function() {
+        const comment = ratingComment.value;
+        
+        fetch('/submit_rating', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                rating: selectedRating,
+                comment: comment
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Close the modal
+                const ratingModal = bootstrap.Modal.getInstance(document.getElementById('ratingModal'));
+                ratingModal.hide();
+                
+                // Show success message
+                Swal.fire({
+                    title: 'Thank You!',
+                    text: data.message,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    // Remove rating nav item from sidebar
+                    const ratingNavItem = document.querySelector('a[data-bs-target="#ratingModal"]').closest('.nav-item');
+                    if (ratingNavItem) {
+                        ratingNavItem.remove();
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: data.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'Failed to submit rating. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
+    });
+    
+    // Reset modal when closed
+    document.getElementById('ratingModal').addEventListener('hidden.bs.modal', function() {
+        // Reset stars
+        stars.forEach(star => {
+            star.classList.remove('active');
+            star.classList.remove('bi-star-fill');
+            star.classList.add('bi-star');
+            star.style.color = '#dee2e6';
+        });
+        
+        // Reset form
+        ratingComment.value = '';
+        charCount.textContent = '0';
+        submitBtn.disabled = true;
+        selectedRating = 0;
+    });
+});
+</script>

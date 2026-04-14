@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FilSha - Verify OTP</title>
+  <link href="{{ url_for('static', filename='img/logo1.png') }}" rel="icon">
+  <link href="{{ url_for('static', filename='img/logo.png') }}" rel="icon">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/user/otp.css') }}" rel="stylesheet">
+</head>
+
+<body>
+  <div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+  <div class="form-login">
+    <h3>Verify OTP</h3>
+    <p>A code has been sent to {{ masked_phone_number }}</p>
+    <form method="POST" id="otpForm">
+
+      <div class="otp-input-container">
+        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" required>
+        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" required>
+        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" required>
+        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" required>
+        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" required>
+        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" required>
+      </div>
+      <input type="hidden" id="otp" name="otp">
+      <button class="btn-primary" type="submit">Submit</button>
+    </form>
+    <div class="timer" id="timer">Resend OTP in 60 seconds</div>
+    <button class="resend-otp" id="resendBtn" disabled onclick="resendOTP()">Resend OTP</button>
+  </div>
+
+  <script>
+    const otpInputs = document.querySelectorAll(".otp-input");
+    otpInputs.forEach((input, index) => {
+      input.addEventListener("input", (e) => {
+        if (e.target.value && index < otpInputs.length - 1) {
+          otpInputs[index + 1].focus();
+        }
+      });
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Backspace" && index > 0 && !input.value) {
+          otpInputs[index - 1].focus();
+        }
+      });
+    });
+
+    let timeLeft = 60;
+    const timerElement = document.getElementById('timer');
+    const resendBtn = document.getElementById('resendBtn');
+    
+    function updateTimer() {
+      timeLeft--;
+      timerElement.textContent = `Resend OTP in ${timeLeft} seconds`;
+      
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        timerElement.style.display = 'none';
+        resendBtn.disabled = false;
+      }
+    }
+    
+    let timerInterval = setInterval(updateTimer, 1000);
+    
+    function resendOTP() {
+      alert("OTP has been resent!");
+      timeLeft = 60;
+      timerElement.style.display = 'block';
+      resendBtn.disabled = true;
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+    
+  </script>
+
+  <script>
+    document.getElementById('otpForm').addEventListener('submit', function(event) {
+      const otpInputs = document.querySelectorAll(".otp-input");
+      let otp = '';
+      otpInputs.forEach(input => {
+        otp += input.value;
+      });
+      document.getElementById('otp').value = otp;
+    });
+  </script>
+
+</body>
+</html>

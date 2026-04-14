@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Userprofile</title>
+
+  <!-- Favicons -->
+  <link href="{{ url_for('static', filename='img/logo.png') }}" rel="icon">
+  <link href="{{ url_for('static', filename='img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{{ url_for('static', filename='vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/quill/quill.snow.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/quill/quill.bubble.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/remixicon/remixicon.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/simple-datatables/style.css') }}" rel="stylesheet">
+
+  <!-- Bootstrap -->
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/bootstrap-icons/font/bootstrap-icons.css') }}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+  <!-- Custom Styles -->
+  <style>
+    .profile-details-container {
+      transition: all 0.3s ease;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .profile-row {
+      transition: all 0.2s ease-in-out;
+    }
+    
+    .profile-row:hover {
+      background-color: #f8f9fa !important;
+      transform: translateX(5px);
+    }
+    
+    .label {
+      font-size: 0.95rem;
+    }
+    
+    @media (max-width: 768px) {
+      .profile-row {
+        padding: 10px 5px;
+      }
+      
+      .profile-details-container {
+        padding: 10px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  {% include 'base_nav.html' %}
+
+  <!-- ======= Main Content ======= -->
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h2>User Profile</h2>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="UserDashboard">Home</a></li>
+          <li class="breadcrumb-item active">User Profile</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section profile">
+      <div class="row justify-content-center">
+        <div class="row">
+          <div class="card">
+            <div class="card-body pt-3">
+              <!-- Bordered Tabs -->
+              <ul class="nav nav-tabs nav-tabs-bordered">
+                <li class="nav-item">
+                  <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Overview</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit Profile</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Settings</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change Password</button>
+                </li>
+              </ul>
+              <div class="tab-content pt-2">
+                <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                    <h5 class="card-title mb-4">Profile Details</h5>
+                    
+                    <div class="profile-details-container p-3 bg-white rounded shadow-sm">
+                      <!-- Profile information with improved styling -->
+                      <div class="row mb-3 py-2 border-bottom profile-row">
+                        <div class="col-lg-3 col-md-4 label fw-bold text-secondary">Full Name</div>
+                        <div class="col-lg-9 col-md-8 text-dark">{{ role_details.first_name }} {{ role_details.middle_name }} {{ role_details.last_name }}</div>
+                      </div>
+                      
+                      <div class="row mb-3 py-2 border-bottom profile-row bg-light">
+                        <div class="col-lg-3 col-md-4 label fw-bold text-secondary">Username</div>
+                        <div class="col-lg-9 col-md-8 text-dark">{{ user.username }}</div>
+                      </div>
+                      
+                      <div class="row mb-3 py-2 border-bottom profile-row">
+                        <div class="col-lg-3 col-md-4 label fw-bold text-secondary">Position</div>
+                        <div class="col-lg-9 col-md-8 text-dark">
+                            {% if role == 'barangay-captain' %}
+                                {{ role_details.position }}
+                            {% elif role == 'government-position' %}
+                                {{ role_details.government_position }}
+                            {% elif role == 'municipal-employee' %}
+                                {{ role_details.position }}
+                            {% endif %}
+                        </div>
+                      </div>
+                      
+                      {% if role == 'barangay-captain' %}
+                      <div class="row mb-3 py-2 border-bottom profile-row">
+                        <div class="col-lg-3 col-md-4 label fw-bold text-secondary">Barangay</div>
+                        <div class="col-lg-9 col-md-8 text-dark">{{ role_details.barangay }}</div>
+                      </div>
+                      <div class="row mb-3 py-2 border-bottom profile-row bg-light">
+                        <div class="col-lg-3 col-md-4 label fw-bold text-secondary">Address</div>
+                        <div class="col-lg-9 col-md-8 text-dark">{{ role_details.barangay }}</div>
+                      </div>
+                      {% elif role == 'municipal-employee' %}
+                      <div class="row mb-3 py-2 border-bottom profile-row">
+                        <div class="col-lg-3 col-md-4 label fw-bold text-secondary">Department</div>
+                        <div class="col-lg-9 col-md-8 text-dark">{{ role_details.department }}</div>
+                      </div>
+                      {% elif role == 'government-position' %}
+                      <div class="row mb-3 py-2 border-bottom profile-row">
+                        <div class="col-lg-3 col-md-4 label fw-bold text-secondary">Government Position</div>
+                        <div class="col-lg-9 col-md-8 text-dark">{{ role_details.government_position }}</div>
+                      </div>
+                      {% endif %}
+                      
+                      <div class="row mb-3 py-2 border-bottom profile-row {% if role == 'government-position' %}bg-light{% endif %}">
+                        <div class="col-lg-3 col-md-4 label fw-bold text-secondary">Phone</div>
+                        <div class="col-lg-9 col-md-8 text-dark">{{ role_details.contact_number }}</div>
+                      </div>
+                      
+                      <div class="row mb-3 py-2 profile-row {% if role != 'government-position' %}bg-light{% endif %}">
+                        <div class="col-lg-3 col-md-4 label fw-bold text-secondary">Email</div>
+                        <div class="col-lg-9 col-md-8 text-dark">{{ role_details.email }}</div>
+                      </div>
+                    </div>
+                </div>
+
+                <!-- In the tab-content section, add this to the profile-settings tab -->
+                <div class="tab-pane fade pt-3" id="profile-settings">
+                  <h5 class="card-title">Security Settings</h5>
+                  
+                  <div class="row mb-3">
+                    <div class="col-md-8 col-lg-9">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="blockIncomingFiles" 
+                              {% if user.block_incoming_files %}checked{% endif %}
+                              onchange="toggleBlockIncomingFiles(this)">
+                        <label class="form-check-label" for="blockIncomingFiles">
+                          Block incoming files
+                        </label>
+                      </div>
+                      <small class="text-muted">
+                        When enabled, you won't receive any files from other users.
+                      </small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Change Password Tab -->
+                <div class="tab-pane fade pt-3" id="profile-change-password">
+                  <!-- Change Password Form -->
+                  <form action="{{ url_for('profile_change_password') }}" method="POST">
+                    <div class="row mb-3">
+                      <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current Password</label>
+                      <div class="col-md-8 col-lg-9">
+                        <div class="input-group">
+                          <input name="current_password" type="password" class="form-control" id="currentPassword" required>
+                          <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('currentPassword', this)">
+                            <i class="bi bi-eye"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
+                      <div class="col-md-8 col-lg-9">
+                        <div class="input-group">
+                          <input name="new_password" type="password" class="form-control" id="newPassword" required>
+                          <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('newPassword', this)">
+                            <i class="bi bi-eye"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="confirmPassword" class="col-md-4 col-lg-3 col-form-label">Re-enter New Password</label>
+                      <div class="col-md-8 col-lg-9">
+                        <div class="input-group">
+                          <input name="confirm_password" type="password" class="form-control" id="confirmPassword" required>
+                          <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirmPassword', this)">
+                            <i class="bi bi-eye"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-primary">Change Password</button>
+                    </div>
+                  </form><!-- End Change Password Form -->
+                </div>
+            
+    
+                <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+                  <!-- Profile Edit Form -->
+                  {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <div class="flash-message">
+                        {{ message }}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+                  <div class="row mb-3 justify-content-center align-items-center">
+                    <label for="profileImage" class="col-md-4 col-lg-3 col-form-label text-center">Profile Image</label>
+                    <div class="col-md-8 col-lg-9 text-center">
+                        <img src="{{ url_for('profile_picture', user_id=current_user.id) }}" alt="Profile" class="circular-image" style="max-width: 150px; max-height: 150px;">
+                        <div class="pt-2">
+                            <form action="{{ url_for('upload_profile_picture') }}" method="POST" enctype="multipart/form-data">
+                                <input type="file" name="profile_picture" id="profile_picture" style="display: none;" accept="image/*" onchange="this.form.submit()">
+                                <label for="profile_picture" class="btn btn-primary" title="Upload new profile image">
+                                    <i class="bi bi-upload"></i> Upload
+                                </label>
+                            </form>
+                            <a href="#" class="btn btn-danger" title="Remove my profile image" onclick="removeProfilePicture()">
+                                <i class="bi bi-trash"></i> Remove
+                            </a>
+                        </div>
+                    </div>
+                </div>
+              </div><!-- End Bordered Tabs -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- End #main -->
+
+  <footer id="footer" class="footer">
+  <div class="copyright">
+    &copy; Copyright <strong><span>FilSha</span></strong>. All Rights Reserved
+  </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/simple-datatables/simple-datatables.js') }}"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+  <!-- Custom Scripts -->
+  <script>
+    // Function to toggle sidebar
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const main = document.getElementById('main');
+      sidebar.classList.toggle('collapsed');
+      main.classList.toggle('expanded');
+    }
+
+    // Automatically hide flash messages after 3 seconds
+    setTimeout(function() {
+      var flashMessage = document.getElementById('flash-message');
+      if (flashMessage) {
+        flashMessage.style.opacity = '0';
+        setTimeout(function() {
+          flashMessage.style.display = 'none';
+        }, 500); // Wait for the fade-out animation to complete
+      }
+    }, 3000); // 3000 milliseconds = 3 seconds
+  </script>
+
+  <script>
+    function togglePassword(fieldId, button) {
+      const field = document.getElementById(fieldId);
+      const icon = button.querySelector('i');
+      
+      if (field.type === "password") {
+        field.type = "text";
+        icon.classList.replace("bi-eye", "bi-eye-slash");
+      } else {
+        field.type = "password";
+        icon.classList.replace("bi-eye-slash", "bi-eye");
+      }
+    }
+    
+    function removeProfilePicture() {
+      if (confirm('Are you sure you want to remove your profile picture?')) {
+          fetch("{{ url_for('remove_profile_picture') }}", {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              }
+          }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Reload the page to reflect changes
+                } else {
+                    alert('Failed to remove profile picture');
+                }
+            });
+      }
+  }
+
+  // Add this to your existing JavaScript section
+// Update the toggleBlockIncomingFiles function
+function toggleBlockIncomingFiles(checkbox) {
+  const isBlocked = checkbox.checked;
+  
+  // Show loading state
+  const label = checkbox.nextElementSibling;
+  const originalText = label.textContent;
+  label.textContent = 'Updating...';
+  
+  fetch("{{ url_for('toggle_block_incoming_files') }}", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ block: isBlocked })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      // Success - update UI
+      checkbox.checked = data.blocked;
+      label.textContent = originalText;
+      
+      // Show success toast
+      showToast(`Incoming files ${data.blocked ? 'blocked' : 'allowed'} successfully`, 'success');
+    } else {
+      throw new Error(data.error || 'Unknown error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    // Revert the checkbox
+    checkbox.checked = !isBlocked;
+    label.textContent = originalText;
+    showToast('Failed to update setting: ' + error.message, 'danger');
+  });
+}
+
+// Add this helper function for toast notifications
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast show align-items-center text-white bg-${type} border-0`;
+  toast.style.position = 'fixed';
+  toast.style.bottom = '20px';
+  toast.style.right = '20px';
+  toast.style.zIndex = '9999';
+  
+  toast.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">
+        ${message}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Auto-remove after 5 seconds
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
+  
+  // Add click to dismiss
+  toast.querySelector('button').addEventListener('click', () => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  });
+}
+
+// Initialize the toggle state on page load
+document.addEventListener('DOMContentLoaded', function() {
+  const blockToggle = document.getElementById('blockIncomingFiles');
+  if (blockToggle) {
+    // Set initial state from the template variable
+    blockToggle.checked = {{ 'true' if user.block_incoming_files else 'false' }};
+    
+    // Add event listener
+    blockToggle.addEventListener('change', function() {
+      toggleBlockIncomingFiles(this);
+    });
+  }
+});
+  </script>
+</body>
+</html>

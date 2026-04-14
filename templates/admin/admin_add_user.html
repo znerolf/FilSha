@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Admin - Adduser - FilSha</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+
+<!--Facivons-->
+<link href="{{ url_for('static', filename='img/iconlogo2.png') }}" rel="icon">
+ 
+<!-- Google Fonts -->
+<link href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+<link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/quill/quill.snow.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/quill/quill.bubble.css') }}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+<!-- Bootstrap -->
+<link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+
+  <!-- Template Main CSS File -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+ 
+</head>
+<body>
+
+  <header id="header" class="header fixed-top d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center justify-content-between w-100">
+      <!-- Sidebar Toggle -->
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+  
+      <!-- Logo -->
+      <a href="{{ url_for('admin_dashboard') }}" class="logo d-flex align-items-center">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+        <span class="d-none d-lg-block">FilSha</span>
+      </a>
+  
+      <!-- Search Bar -->
+      <div class="search-bar ms-auto align-items-center">
+      </div><!-- End Search Bar -->
+    </div>
+      <nav class="header-nav ms-auto">
+        <ul class="d-flex align-items-center">
+  
+          <li class="nav-item d-block d-lg-none">
+            <a class="nav-link nav-icon search-bar-toggle " href="#">
+              <i class="bi bi-search"></i>
+            </a>
+          </li><!-- End Search Icon-->
+  
+          <li class="nav-item dropdown">
+  
+            <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+              <i class="bi bi-bell"></i>
+              <span class="badge bg-primary badge-number">4</span>
+            </a><!-- End Notification Icon -->
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+              <li class="dropdown-header">
+                You have 4 new notifications
+                <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li class="notification-item">
+                <i class="bi bi-exclamation-circle text-warning"></i>
+                <div>
+                  <h4>Lorem Ipsum</h4>
+                  <p>Quae dolorem earum veritatis oditseno</p>
+                  <p>30 min. ago</p>
+                </div>
+              </li>
+  
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li class="notification-item">
+                <i class="bi bi-x-circle text-danger"></i>
+                <div>
+                  <h4>Atque rerum nesciunt</h4>
+                  <p>Quae dolorem earum veritatis oditseno</p>
+                  <p>1 hr. ago</p>
+                </div>
+              </li>
+  
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li class="notification-item">
+                <i class="bi bi-check-circle text-success"></i>
+                <div>
+                  <h4>Sit rerum fuga</h4>
+                  <p>Quae dolorem earum veritatis oditseno</p>
+                  <p>2 hrs. ago</p>
+                </div>
+              </li>
+  
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li class="notification-item">
+                <i class="bi bi-info-circle text-primary"></i>
+                <div>
+                  <h4>Dicta reprehenderit</h4>
+                  <p>Quae dolorem earum veritatis oditseno</p>
+                  <p>4 hrs. ago</p>
+                </div>
+              </li>
+  
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li class="dropdown-footer">
+                <a href="#">Show all notifications</a>
+              </li>
+  
+            </ul><!-- End Notification Dropdown Items -->
+  
+          </li><!-- End Notification Nav -->
+          <li class="nav-item dropdown">
+
+            <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+              <i class="bi bi-chat-left-text"></i>
+              <span class="badge bg-success badge-number">2</span>
+            </a><!-- End Messages Icon -->
+  
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+              <li class="dropdown-header">
+                You have 2 new messages
+                <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li class="message-item">
+                <a href="#">
+                  <img src="assets/img/messages-1.jpg" alt="" class="rounded-circle">
+                  <div>
+                    <h4>Maria Hudson</h4>
+                    <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                    <p>4 hrs. ago</p>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li class="message-item">
+                <a href="#">
+                  <img src="assets/img/messages-2.jpg" alt="" class="rounded-circle">
+                  <div>
+                    <h4>Anna Nelson</h4>
+                    <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                    <p>6 hrs. ago</p>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li class="dropdown-footer">
+                <a href="#">Show all messages</a>
+              </li>
+  
+            </ul><!-- End Messages Dropdown Items -->
+  
+          </li><!-- End Messages Nav -->
+          <li class="nav-item dropdown pe-3">
+          
+  
+            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+              <img src="{{ url_for('static', filename='img/admin_pic.png') }}" alt="Profile" class="circle">
+              <span class="d-none d-md-block dropdown-toggle ps-2">{{ admin_username }}</span>
+            </a><!-- End Profile Image Icon -->
+
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+              <li class="dropdown-header">
+                <h6>{{ admin_username }}</h6>
+                <span>Admin</span>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                  <i class="bi bi-person"></i>
+                  <span>My Profile</span>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="{{ url_for('admin_logout') }}">
+                  <i class="bi bi-box-arrow-right"></i>
+                  <span>Sign Out</span>
+                </a>
+              </li>
+  
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </header><!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_dashboard') }}">
+          <i class="bi bi-grid"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_inquiries') }}">
+          <i class="bi bi-envelope"></i>
+          <span>User's Query</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin_add_user') }}">
+          <i class="bi bi-person-plus"></i>
+          <span>Add Users</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_activity_log') }}">
+          <i class="bi bi-person"></i>
+          <span>User's Activity Logs</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_user_list') }}">
+          <i class="bi bi-person-lines-fill"></i>
+          <span>User Management</span>
+        </a>
+      </li>
+     
+
+  </aside><!-- End Sidebar-->
+
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h2>Add Users</h2>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Home</a></li>
+          <li class="breadcrumb-item active">Add Users</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row justify-content-center">
+        <div class="col-lg-10"> <!-- Increased width for better spacing -->
+          <div class="card shadow-sm"> <!-- Added shadow for depth -->
+            <div class="card-body p-4"> <!-- Increased padding -->
+              <h5 class="card-title text-center mb-4">User's Information</h5>
+
+              <!-- User Add Form with tabs for better organization -->
+              <ul class="nav nav-tabs nav-tabs-bordered mb-4" id="userFormTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal-info" type="button" role="tab" aria-controls="personal-info" aria-selected="true">
+                    <i class="bi bi-person me-1"></i> Personal Information
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="role-tab" data-bs-toggle="tab" data-bs-target="#role-info" type="button" role="tab" aria-controls="role-info" aria-selected="false">
+                    <i class="bi bi-briefcase me-1"></i> Role & Position
+                  </button>
+                </li>
+              </ul>
+
+              <form method="POST" action="{{ url_for('admin_add_user') }}" id="addUserForm">
+                <div class="tab-content" id="userFormTabContent">
+                  <!-- Personal Information Tab -->
+                  <div class="tab-pane fade show active" id="personal-info" role="tabpanel" aria-labelledby="personal-tab">
+                    <div class="row g-3">
+                      <div class="col-md-4">
+                        <label for="firstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" required>
+                      </div>
+                      <div class="col-md-4">
+                        <label for="middleName" class="form-label">Middle Name</label>
+                        <input type="text" class="form-control" id="middleName" name="middleName">
+                      </div>
+                      <div class="col-md-4">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" required>
+                      </div>
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                      <div class="col-md-4">
+                        <label for="gender" class="form-label">Gender</label>
+                        <select class="form-select" id="gender" name="gender" required>
+                          <option value="" selected disabled>Select Gender</option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                      <div class="col-md-4">
+                        <label for="age" class="form-label">Age</label>
+                        <input type="number" class="form-control" id="age" name="age" min="18" max="100" required>
+                      </div>
+                      <div class="col-md-4">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-select" id="role" name="role" required onchange="toggleRoleSpecificFields()">
+                          <option value="" selected disabled>Select Role</option>
+                          <option value="barangay-captain">Barangay Captain</option>
+                          <option value="government-position">Government Position</option>
+                          <option value="municipal-employee">Municipal Employee</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                      <div class="col-md-6">
+                        <label for="contactNumber" class="form-label">Contact Number</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                          <input type="text" class="form-control" id="contactNumber" name="contactNumber" pattern="\+63\d{10}" maxlength="13" placeholder="+639123456789" required>
+                        </div>
+                        <small class="form-text text-muted">Please enter a valid Philippine phone number starting with +63</small>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="email" class="form-label">Email</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                          <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                      <button type="button" class="btn btn-secondary">Cancel</button>
+                      <button type="button" class="btn btn-primary next-tab" data-bs-target="#role-tab">Next <i class="bi bi-arrow-right"></i></button>
+                    </div>
+                  </div>
+
+                  <!-- Role Information Tab -->
+                  <div class="tab-pane fade" id="role-info" role="tabpanel" aria-labelledby="role-tab">
+                    <!-- Role-specific fields containers -->
+                    <div id="barangay-captain-fields" class="role-specific">
+                      <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle me-2"></i> Please select the barangay for the Barangay Captain.
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col-md-8 mx-auto">
+                          <label for="barangay" class="form-label">Barangay</label>
+                          <select class="form-select" id="barangay" name="barangay" required>
+                            <option value="" selected disabled>Select Barangay</option>
+                            <!-- ... existing barangay options ... -->
+                            <option value="Acuit">Acuit</option>
+                            <option value="Agcuyawan Calsada">Agcuyawan Calsada</option>
+                            <option value="Agcuyawan Pulo">Agcuyawan Pulo</option>
+                            <option value="Bagongbong">Bagongbong</option>
+                            <option value="Baras">Baras</option>
+                            <option value="Bungca">Bungca</option>
+                            <option value="Cabilauan">Cabilauan</option>
+                            <option value="Cruz">Cruz</option>
+                            <option value="Guintas">Guintas</option>
+                            <option value="Igbong">Igbong</option>
+                            <option value="Ilaud Poblacion">Ilaud Poblacion</option>
+                            <option value="Ilaya Poblacion">Ilaya Poblacion</option>
+                            <option value="Jalaud">Jalaud</option>
+                            <option value="Lagubang">Lagubang</option>
+                            <option value="Lanas">Lanas</option>
+                            <option value="Lico-an">Lico-an</option>
+                            <option value="Linao">Linao</option>
+                            <option value="Monpon">Monpon</option>
+                            <option value="Palaciawan">Palaciawan</option>
+                            <option value="Patag">Patag</option>
+                            <option value="Salihid">Salihid</option>
+                            <option value="So-ol">So-ol</option>
+                            <option value="Sohoton">Sohoton</option>
+                            <option value="Tabuc-Suba">Tabuc-Suba</option>
+                            <option value="Tabucan">Tabucan</option>
+                            <option value="Talisay">Talisay</option>
+                            <option value="Tinorian">Tinorian</option>
+                            <option value="Tiwi">Tiwi</option>
+                            <option value="Tubungan">Tubungan</option>
+                            <!-- ... other options ... -->
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col-md-8 mx-auto">
+                          <label for="position" class="form-label">Position</label>
+                          <input type="text" class="form-control" id="position" name="position" value="Barangay Captain" readonly>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Government Position Specific Fields -->
+                    <div id="government-position-fields" class="role-specific">
+                      <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle me-2"></i> Please select the government position.
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col-md-8 mx-auto">
+                          <label for="governmentPosition" class="form-label">Government Position</label>
+                          <select class="form-select" id="governmentPosition" name="governmentPosition">
+                            <option value="" selected disabled>Select Position</option>
+                            <option value="mayor">Mayor</option>
+                            <option value="vice-mayor">Vice Mayor</option>
+                            <option value="councilor">Councilor</option>
+                            <option value="secretary">Secretary</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Municipal Employee Specific Fields -->
+                    <div id="municipal-employee-fields" class="role-specific">
+                      <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle me-2"></i> Please provide department and position details.
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col-md-8 mx-auto">
+                          <label for="department" class="form-label">Department</label>
+                          <input type="text" class="form-control" id="department" name="department" placeholder="e.g., Engineering, Finance, etc.">
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <div class="col-md-8 mx-auto">
+                          <label for="employeePosition" class="form-label">Position</label>
+                          <input type="text" class="form-control" id="employeePosition" name="employeePosition" placeholder="e.g., Manager, Clerk, etc.">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                      <button type="button" class="btn btn-secondary prev-tab" data-bs-target="#personal-tab"><i class="bi bi-arrow-left"></i> Previous</button>
+                      <button type="submit" class="btn btn-success"><i class="bi bi-person-plus"></i> Add User</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>FilSha</span></strong>. All Rights Reserved
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='vendor/apexcharts/apexcharts.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/chart.js/chart.umd.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/echarts/echarts.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/quill/quill.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/simple-datatables/simple-datatables.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/tinymce/tinymce.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/php-email-form/validate.js') }}"></script>
+
+<!-- Template Main JS File -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+  // Toggle role-specific fields
+  function toggleRoleSpecificFields() {
+    const role = document.getElementById('role').value;
+    const barangayFields = document.getElementById('barangay-captain-fields');
+    const governmentFields = document.getElementById('government-position-fields');
+    const employeeFields = document.getElementById('municipal-employee-fields');
+
+    // Hide all role-specific fields
+    barangayFields.style.display = 'none';
+    governmentFields.style.display = 'none';
+    employeeFields.style.display = 'none';
+
+    // Show fields based on selected role
+    if (role === 'barangay-captain') {
+      barangayFields.style.display = 'block';
+      // Make barangay field required
+      document.getElementById('barangay').setAttribute('required', '');
+      // Make other fields not required
+      document.getElementById('governmentPosition')?.removeAttribute('required');
+      document.getElementById('department')?.removeAttribute('required');
+      document.getElementById('employeePosition')?.removeAttribute('required');
+    } else if (role === 'government-position') {
+      governmentFields.style.display = 'block';
+      // Make government position field required
+      document.getElementById('governmentPosition').setAttribute('required', '');
+      // Make other fields not required
+      document.getElementById('barangay')?.removeAttribute('required');
+      document.getElementById('department')?.removeAttribute('required');
+      document.getElementById('employeePosition')?.removeAttribute('required');
+    } else if (role === 'municipal-employee') {
+      employeeFields.style.display = 'block';
+      // Make department and position fields required
+      document.getElementById('department').setAttribute('required', '');
+      document.getElementById('employeePosition').setAttribute('required', '');
+      // Make other fields not required
+      document.getElementById('barangay')?.removeAttribute('required');
+      document.getElementById('governmentPosition')?.removeAttribute('required');
+    }
+  }
+
+  // Phone Number Validation with improved UX
+  document.getElementById('contactNumber').addEventListener('input', function (e) {
+    const input = e.target;
+    let value = input.value.replace(/\D/g, '');
+
+    if (!value.startsWith('63')) {
+      value = '63' + value; 
+    }
+
+    if (value.length > 12) {
+      value = value.substring(0, 12); 
+    }
+
+    // Format the value with +63 prefix
+    input.value = '+' + value;
+
+    // Visual feedback
+    if (value.length === 12) {
+      input.classList.add('is-valid');
+      input.classList.remove('is-invalid');
+      input.setCustomValidity('');
+    } else {
+      input.classList.add('is-invalid');
+      input.classList.remove('is-valid');
+      input.setCustomValidity('Phone number must be 10 digits long after +63 (e.g., +639123456789).');
+    }
+  });
+
+  // Tab navigation
+  document.querySelectorAll('.next-tab').forEach(button => {
+    button.addEventListener('click', function() {
+      const targetTab = document.querySelector(this.dataset.bsTarget);
+      if (targetTab) {
+        const tab = new bootstrap.Tab(targetTab);
+        tab.show();
+      }
+    });
+  });
+
+  document.querySelectorAll('.prev-tab').forEach(button => {
+    button.addEventListener('click', function() {
+      const targetTab = document.querySelector(this.dataset.bsTarget);
+      if (targetTab) {
+        const tab = new bootstrap.Tab(targetTab);
+        tab.show();
+      }
+    });
+  });
+
+  // Form validation
+  document.getElementById('addUserForm').addEventListener('submit', function(event) {
+    const form = this;
+    if (!form.checkValidity()) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    form.classList.add('was-validated');
+  });
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    toggleRoleSpecificFields();
+  });
+</script>
+</body>
+
+</html>

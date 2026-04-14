@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Admin - Activity Logs - FilSha</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{{ url_for('static', filename='img/iconlogo2.png') }}" rel="icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/quill/quill.snow.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/quill/quill.bubble.css') }}" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+
+  <!-- Template Main CSS File -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+  <!-- Bootstrap -->
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Custom Styles -->
+  <style>
+    .activity-log-container {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    }
+    .log-header {
+      background-color: #2c3e50;
+      color: white;
+      border-radius: 8px 8px 0 0;
+      padding: 1.5rem;
+    }
+    .file-upload-log { background-color: #e8f4ff; }
+    .virus-detected-log { background-color: #f8d7da; }
+    .system-alert-log { background-color: #fff3cd; }
+    .badge {
+      font-size: 0.8em;
+      padding: 0.5em 0.75em;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center justify-content-between w-100">
+      <!-- Sidebar Toggle -->
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+
+      <!-- Logo -->
+      <a href="{{ url_for('admin_dashboard') }}" class="logo d-flex align-items-center">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+        <span class="d-none d-lg-block">FilSha</span>
+      </a>
+
+      <!-- Search Bar -->
+      <div class="search-bar ms-auto align-items-center">
+      </div><!-- End Search Bar -->
+    </div>
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+        <li class="nav-item d-block d-lg-none">
+          <a class="nav-link nav-icon search-bar-toggle" href="#">
+            <i class="bi bi-search"></i>
+          </a>
+        </li><!-- End Search Icon-->
+
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-primary badge-number">4</span>
+          </a><!-- End Notification Icon -->
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+            <li class="dropdown-header">
+              You have 4 new notifications
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="notification-item">
+              <i class="bi bi-exclamation-circle text-warning"></i>
+              <div>
+                <h4>Lorem Ipsum</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>30 min. ago</p>
+              </div>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="notification-item">
+              <i class="bi bi-x-circle text-danger"></i>
+              <div>
+                <h4>Atque rerum nesciunt</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>1 hr. ago</p>
+              </div>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="notification-item">
+              <i class="bi bi-check-circle text-success"></i>
+              <div>
+                <h4>Sit rerum fuga</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>2 hrs. ago</p>
+              </div>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="notification-item">
+              <i class="bi bi-info-circle text-primary"></i>
+              <div>
+                <h4>Dicta reprehenderit</h4>
+                <p>Quae dolorem earum veritatis oditseno</p>
+                <p>4 hrs. ago</p>
+              </div>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="dropdown-footer">
+              <a href="#">Show all notifications</a>
+            </li>
+          </ul><!-- End Notification Dropdown Items -->
+        </li><!-- End Notification Nav -->
+
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-chat-left-text"></i>
+            <span class="badge bg-success badge-number">2</span>
+          </a><!-- End Messages Icon -->
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+            <li class="dropdown-header">
+              You have 2 new messages
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="message-item">
+              <a href="#">
+                <img src="assets/img/messages-1.jpg" alt="" class="rounded-circle">
+                <div>
+                  <h4>Maria Hudson</h4>
+                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                  <p>4 hrs. ago</p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="message-item">
+              <a href="#">
+                <img src="assets/img/messages-2.jpg" alt="" class="rounded-circle">
+                <div>
+                  <h4>Anna Nelson</h4>
+                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                  <p>6 hrs. ago</p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="dropdown-footer">
+              <a href="#">Show all messages</a>
+            </li>
+          </ul><!-- End Messages Dropdown Items -->
+        </li><!-- End Messages Nav -->
+
+        <li class="nav-item dropdown pe-3">
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            <img src="{{ url_for('static', filename='img/admin_pic.png') }}" alt="Profile" class="circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{ admin_username }}</span>
+          </a><!-- End Profile Image Icon -->
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6>{{ admin_username }}</h6>
+              <span>Admin</span>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                <i class="bi bi-person"></i>
+                <span>My Profile</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{{ url_for('admin_logout') }}">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header><!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_dashboard') }}">
+          <i class="bi bi-grid"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_inquiries') }}">
+          <i class="bi bi-envelope"></i>
+          <span>User's Query</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_add_user') }}">
+          <i class="bi bi-person-plus"></i>
+          <span>Add Users</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin_activity_log') }}">
+          <i class="bi bi-person"></i>
+          <span>User's Activity Logs</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_user_list') }}">
+          <i class="bi bi-person-lines-fill"></i>
+          <span>User Management</span>
+        </a>
+      </li>
+    </ul>
+  </aside><!-- End Sidebar-->
+
+  <!-- ======= Main Content ======= -->
+  <main id="main" class="main">
+    <div class="pagetitle">
+      <h2>User's Activity Logs</h2>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Home</a></li>
+          <li class="breadcrumb-item active">Activity Log</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section>
+      <div class="container py-5">
+        <div class="activity-log-container">
+          <div class="log-header">
+            <div class="d-flex justify-content-between align-items-center">
+              <h2 class="mb-0">System Activity Log</h2>
+            </div>
+            <div class="mt-3">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="card bg-info text-black">
+                    <div class="card-body">
+                      <h5 class="card-title">Total Activities</h5>
+                      <p class="card-text display-6">{{ logs|length }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4">
+            <table id="activityTable" class="table table-hover table-striped">
+              <thead class="table-dark">
+                <tr>
+                  <th>Timestamp</th>
+                  <th>User</th>
+                  <th>Action Type</th>
+                  <th>Details</th>
+                  <th>File Info</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for log in logs %}
+                <tr class="{% if 'file_upload' in log.action %}file-upload-log{% endif %}
+                          {% if 'virus' in log.description %}virus-detected-log{% endif %}
+                          {% if not log.user_id %}system-alert-log{% endif %}">
+                  <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                  <td>
+                    {% if log.username %}
+                      {{ log.username }}
+                    {% else %}
+                      <span class="text-muted">System Action</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <span class="badge rounded-pill 
+                      {% if log.action == 'file_upload' %}bg-primary
+                      {% elif log.action == 'virus_detected' %}bg-danger
+                      {% elif log.action == 'login' %}bg-success
+                      {% else %}bg-secondary{% endif %}">
+                      {{ log.action|replace('_',' ')|title }}
+                    </span>
+                  </td>
+                  <td>{{ log.description }}</td>
+                  <td>
+                    {% if log.filename %}
+                      <span class="text-primary">{{ log.filename }}</span><br>
+                      <small class="text-muted">
+                        {% if log.size %}
+                          {{ (log.size / (1024 * 1024))|round(2) }} MB
+                        {% else %}
+                          Size: N/A
+                        {% endif %}
+                      </small>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% else %}
+                <tr>
+                  <td colspan="5" class="text-center py-4">No activity records found</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>FilSha</span></strong>. All Rights Reserved
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="{{ url_for('static', filename='vendor/apexcharts/apexcharts.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/chart.js/chart.umd.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/echarts/echarts.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/quill/quill.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/simple-datatables/simple-datatables.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/tinymce/tinymce.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/php-email-form/validate.js') }}"></script>
+
+  <!-- DataTables JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+  <!-- Initialize DataTables -->
+  <script>
+    $(document).ready(function() {
+      $('#activityTable').DataTable({
+        order: [[0, 'desc']],
+        columnDefs: [
+          { targets: 0, type: 'date' },
+          { targets: [2,4], searchable: false }
+        ],
+        language: {
+          search: "Filter records:",
+          lengthMenu: "Show _MENU_ entries"
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

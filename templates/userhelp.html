@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help Desk</title>
+
+  <!-- Favicons -->
+  <link href="{{ url_for('static', filename='img/favicon.png') }}" rel="icon">
+  <link href="{{ url_for('static', filename='img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{{ url_for('static', filename='vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/quill/quill.snow.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/quill/quill.bubble.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/remixicon/remixicon.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/simple-datatables/style.css') }}" rel="stylesheet">
+
+  <!-- Bootstrap -->
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/bootstrap-icons/font/bootstrap-icons.css') }}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+
+  {% include 'base_nav.html' %}
+
+  <!-- ======= Main Content ======= -->
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h2>User Help</h2>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="UserDashboard">Home</a></li>
+          <li class="breadcrumb-item active">User Help</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+    
+    <section class="section">
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div id="flash-message" class="{{ 'flash-message' if category == 'danger' else 'success-message' }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+        {% endwith %}
+      <div class="row">
+          <div class="col-lg-12">
+              <div class="card">
+                  <div class="card-body">
+                      <h5 class="card-title">Contact User Support</h5>
+
+                      <!-- Support Form Section -->
+                      <form id="supportForm" method="POST" enctype="multipart/form-data">
+                          <div class="mb-3">
+                              <label for="subject" class="form-label">Subject</label>
+                              <select class="form-select" id="subject" name="subject" required>
+                                  <option value="" selected disabled>Select a category</option>
+                                  <option value="Account Issues">Account Issues</option>
+                                  <option value="File Sharing Problems">File Sharing Problems</option>
+                                  <option value="Security Concerns">Security Concerns</option>
+                                  <option value="Login Problems">Login Problems</option>
+                                  <option value="Performance Issues">Performance Issues</option>
+                                  <option value="Feature Request">Feature Request</option>
+                                  <option value="Bug Report">Bug Report</option>
+                                  <option value="Other">Other</option>
+                              </select>
+                          </div>
+                          <div class="mb-3" id="otherSubjectContainer" style="display: none;">
+                              <label for="otherSubject" class="form-label">Please specify</label>
+                              <input type="text" class="form-control" id="otherSubject" name="otherSubject" placeholder="Please specify your subject">
+                          </div>
+                          <div class="mb-3">
+                              <label for="description" class="form-label">Describe Your Issue</label>
+                              <textarea class="form-control" id="description" name="description" rows="4" placeholder="Please describe your issue" required></textarea>
+                          </div>
+                          <div class="mb-3">
+                              <label for="screenshot" class="form-label">Add a Screenshot (Recommended)</label>
+                              <input type="file" class="form-control" id="screenshot" name="screenshot" accept="image/*">
+                              <div class="form-text text-muted">Adding a screenshot helps us understand your issue better.</div>
+                          </div>
+                          <div class="text-center">
+                              <button type="submit" class="btn btn-primary">Submit Request</button>
+                          </div>
+                      </form>
+
+                      <hr>
+
+                      <!-- Support Ticket History -->
+                      <h5 class="mt-4">Your Support Ticket History</h5>
+                      <table class="table table-bordered">
+                          <thead>
+                              <tr>
+                                  <th>Subject</th>
+                                  <th>Description</th>
+                                  <th>Screenshot</th>
+                                  <th>Status</th>
+                                  <th>Created At</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              {% for inquiry in inquiries %}
+                              <tr>
+                                  <td>{{ inquiry.subject }}</td>
+                                  <td>{{ inquiry.description }}</td>
+                                  <td>
+                                    {% if inquiry.screenshot %}
+                                      <button type="button" class="btn btn-sm btn-info view-screenshot" data-bs-toggle="modal" data-bs-target="#screenshotModal" data-screenshot="{{ url_for('view_inquiry_screenshot', inquiry_id=inquiry.id) }}">
+                                        <i class="bi bi-image"></i> View
+                                      </button>
+                                    {% else %}
+                                      <span class="text-muted">No screenshot</span>
+                                    {% endif %}
+                                  </td>
+                                  <td>
+                                    {% if inquiry.status == 'Resolved' %}
+                                      <span class="badge text-success"><i class="bi bi-check2-circle"></i> Resolved</span>
+                                    {% else %}
+                                      <span class="badge text-warning"><i class="bi bi-hourglass-split"></i> Pending</span>
+                                    {% endif %}
+                                  </td>
+                                  <td>{{ inquiry.created_at }}</td>
+                              </tr>
+                              {% endfor %}
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+
+  </main><!-- End #main -->
+
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+<!-- Screenshot Modal -->  
+<div class="modal fade" id="screenshotModal" tabindex="-1" aria-labelledby="screenshotModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="screenshotModalLabel">Screenshot</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="screenshotImage" src="" class="img-fluid" alt="Screenshot" style="max-height: 80vh;">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Vendor JS Files -->
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/simple-datatables/simple-datatables.js') }}"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+  <!-- Custom Scripts -->
+  <script>
+    // Function to toggle sidebar
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const main = document.getElementById('main');
+      sidebar.classList.toggle('collapsed');
+      main.classList.toggle('expanded');
+    }
+    
+    // Handle screenshot modal and form functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set the screenshot image source when the modal is about to be shown
+      document.querySelectorAll('.view-screenshot').forEach(button => {
+        button.addEventListener('click', function() {
+          const screenshotUrl = this.getAttribute('data-screenshot');
+          document.getElementById('screenshotImage').src = screenshotUrl;
+        });
+      });
+      
+      // Clear the image source when the modal is closed to prevent caching issues
+      document.getElementById('screenshotModal').addEventListener('hidden.bs.modal', function() {
+        document.getElementById('screenshotImage').src = '';
+      });
+      
+      // Handle subject dropdown change
+      const subjectSelect = document.getElementById('subject');
+      const otherSubjectContainer = document.getElementById('otherSubjectContainer');
+      const otherSubjectInput = document.getElementById('otherSubject');
+      
+      subjectSelect.addEventListener('change', function() {
+        if (this.value === 'Other') {
+          otherSubjectContainer.style.display = 'block';
+          otherSubjectInput.setAttribute('required', 'required');
+        } else {
+          otherSubjectContainer.style.display = 'none';
+          otherSubjectInput.removeAttribute('required');
+        }
+      });
+      
+      // Handle form submission
+      document.getElementById('supportForm').addEventListener('submit', function(e) {
+        if (subjectSelect.value === 'Other' && otherSubjectInput.value.trim() !== '') {
+          // Create a hidden input to store the combined subject
+          const hiddenInput = document.createElement('input');
+          hiddenInput.type = 'hidden';
+          hiddenInput.name = 'subject';
+          hiddenInput.value = 'Other: ' + otherSubjectInput.value;
+          
+          // Replace the original subject value
+          this.appendChild(hiddenInput);
+          subjectSelect.removeAttribute('name');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

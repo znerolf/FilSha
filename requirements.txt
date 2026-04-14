@@ -1,0 +1,12 @@
+flask
+flask-bcrypt
+flask-login
+flask-session
+cryptography
+pycryptodome
+pillow
+mysql-connector-python
+requests
+flask-mail
+psutil
+python-dotenv

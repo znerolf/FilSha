@@ -1,0 +1,229 @@
+/* General body styling */
+body {
+    background-image: url("/static/img/loginlogo1.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Times New Roman', Times, serif;
+    overflow: hidden; /* Prevent scrollbars when zoomed */
+    background-color: hsl(104, 23%, 50%);
+  }
+  
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    transition: transform 0.5s ease-out;
+    background-color: transparent;
+  }
+  
+  .container:hover {
+    transform: scale(1.1); /* Slight zoom effect on hover */
+  }
+  
+  .container.bounce-animation {
+    animation: bounce 0.79s ease-in-out;
+  }
+  
+  @keyframes bounce {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  /* Form styling */
+  .form-login {
+    background-color: rgba(10, 27, 2, 0.55);
+    padding: 4vw 5vw; 
+    border-radius: 1em; 
+    color: white;
+    box-shadow: 0 1px 0 #cfcfcf;
+    width: 40vw; 
+    max-width: 500px; 
+    border: 5px solid rgba(255, 255, 255, 0.3);
+
+  }
+  
+  ::placeholder {
+    color: #ffffff !important;
+    opacity: 1;
+    font-size: 14px !important; /* Use rem for font size */
+    text-align: center;
+  }
+  
+  .form-control {
+    background: transparent !important;
+    color: white !important;
+    font-size: 1.2rem !important; /* Use rem for font size */
+    border-radius: 0.625em; /* Use em for border-radius */
+  }
+  
+  .form-control:focus {
+    border-color: #11431b; /* Change to your desired color */
+    box-shadow: 0 0 0 0.25rem hsl(104, 23%, 50%);
+  }
+  
+  .form-control:hover {
+    box-shadow: 0 0 0 0.25rem hsl(104, 23%, 50%);
+  }
+  
+  .btn {
+    color: white;
+    background-color: #11431b;
+    font-size: 1rem; /* Use rem for font size */
+    padding: 1rem 2rem; /* Use rem for padding */
+  }
+  
+  .btn:hover {
+    color: black;
+    background-color: hsl(104, 23%, 50%);
+  }
+  
+  h4 {
+    color: white !important;
+
+    text-align: center;
+    font-size: 24px; /* Use rem for font size */
+  }
+  h3{
+    border-bottom: 1px solid #fff;
+    text-align: center;
+    font-size: 16px;
+    padding-bottom: 1rem;
+  }
+  
+  /* Responsiveness for smaller devices */
+  @media (max-width: 768px) {
+    .form-login {
+      width: 80vw; /* Adjust form width to 80% of viewport width */
+      padding: 3vw 6vw; /* Adjust padding for smaller screens */
+    }
+  
+    .container {
+      height: auto;
+      padding: 2vw; /* Use vw for container padding */
+    }
+  
+    .form-control {
+      font-size: 1rem !important; /* Adjust font size for inputs */
+    }
+  
+    .btn {
+      font-size: 1.1rem; /* Adjust button font size */
+      padding: 0.8rem 1.8rem;
+    }
+  
+    h4 {
+      font-size: 1.8rem; /* Adjust heading font size for smaller screens */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .form-login {
+      width: 90vw; /* Form takes 90% of the viewport width */
+      padding: 4vw 8vw;
+    }
+  
+    .container {
+      padding: 3vw;
+    }
+  
+    .form-control {
+      font-size: 0.9rem !important;
+    }
+  
+    .btn {
+      font-size: 1rem;
+      padding: 0.7rem 1.5rem;
+    }
+  
+    h4 {
+      font-size: 1.6rem;
+    }
+  }
+  
+  /* Checkbox and label styles */
+  .form-check-input:checked {
+    background-color: #11431b;
+    border-color: hsl(104, 23%, 50%);
+  }
+  
+  .form-check-label {
+    color: #ffffff !important;
+  }
+  
+  .form-check-input:focus {
+    border-color: #11431b;
+    box-shadow: 0 0 0 0.25rem hsl(104, 23%, 50%);
+  }
+
+  .flash-message {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    text-align: center;
+    animation: slideDown 0.5s ease-in-out, fadeOut 0.5s ease-in-out 2.5s forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .flash-message::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: progressBar 3s linear forwards;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes progressBar {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  

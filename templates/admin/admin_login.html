@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>FilSha - Login</title>
+  <meta content="Secure file sharing made simple." name="description">
+  <meta content="file sharing, secure login, FilSha" name="keywords">
+
+  <!-- Favicon -->
+  <link href="{{ url_for('static', filename='img/logo.png') }}" rel="icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS -->
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link href="{{ url_for('static', filename='css/user/loginpagestyle.css') }}" rel="stylesheet">
+  <script src="{{ url_for('static', filename='js/user/loginscript.js') }}"></script>
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+</head>
+
+<body>
+  <!-- Flash Messages -->
+  <div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a href="landingpage" class="navbar-brand">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" alt="FilSha Logo" class="navbar-logo">
+      FilSha
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="ms-auto d-flex">
+        <a href="{{ url_for('login') }}" class="btn btn-secondary me-2">User Login</a>
+        <a href="{{ url_for('admin_login') }}" class="btn btn-primary">Admin Login</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+  <!-- Main Content -->
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-6 d-flex justify-content-center align-items-center bg-image">
+      <lottie-player 
+              src="{{ url_for('static', filename='img/logo.json') }}"  
+              background="transparent"  
+              speed="1"  
+              loop  
+              autoplay
+              class="lottie-logo">
+    </lottie-player>
+    </div>
+
+    <!-- Form section -->
+    <div class="col-md-6 d-flex align-items-center justify-content-center">
+      <div class="form-login">
+        <div id="user-login">
+          <h1>Welcome to FilSha</h1>
+          <p class="subtext">Secure file sharing made simple.</p>
+
+          <!-- Login Form -->
+          <form method="POST" action="{{ url_for('admin_login') }}" novalidate>
+            <div class="mb-3">
+              <div class="password-wrapper">
+                <span class="input-icon"><i class="bx bx-user"></i></span>
+                <input type="text" class="form-control" name="username" placeholder="Username" required>
+              </div>
+            </div>
+            <div class="password-wrapper">
+              <span class="input-icon"><i class="bx bx-lock-alt"></i></span>
+              <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+              <i class="bx bx-show password-toggle" id="togglePassword"></i>
+            </div>
+            <!--<div class="remember-forgot">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="rememberMe">
+                <label class="form-check-label" for="rememberMe">Remember me</label>
+              </div>
+              <a href="#" class="forgot-link">Forgot password?</a>
+            </div> -->
+            <div class="text-center">
+              <button type="submit" class="btn btn-login">
+                <i class="bx bx-log-in-circle me-1"></i> Log in
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- Bootstrap JS -->
+  <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById("togglePassword").addEventListener("click", function() {
+      var passwordInput = document.getElementById("password");
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        this.classList.replace("bx-show", "bx-hide");
+      } else {
+        passwordInput.type = "password";
+        this.classList.replace("bx-hide", "bx-show");
+      }
+    });
+    
+    // Auto-hide flash messages after 3 seconds
+    const flashContainer = document.querySelector('.flash-container');
+    if (flashContainer && flashContainer.hasChildNodes()) {
+      setTimeout(() => {
+        flashContainer.style.display = 'none';
+      }, 3000);
+    }
+    
+    // Add loading state to button on form submit
+    document.querySelector('form').addEventListener('submit', function() {
+      const button = document.querySelector('.btn-login');
+      button.classList.add('loading');
+      button.innerHTML = '';
+    });
+  </script>
+</body>
+
+</html>

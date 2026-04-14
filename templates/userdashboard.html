@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link href="{{ url_for('static', filename='img/logo.png') }}" rel="icon">
+  
+  <!-- Preload and load CSS efficiently -->
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  </noscript>
+
+  <!-- Critical CSS for initial render -->
+  <style>
+    /* Prevent FOUC */
+    body { opacity: 0; }
+    body.loaded { opacity: 1; transition: opacity 0.3s ease; }
+    
+    /* Loading states */
+    .skeleton-loader {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: 4px;
+      color: transparent !important;
+    }
+    
+    .card { opacity: 0; transition: opacity 0.3s ease; }
+    .card.loaded { opacity: 1; }
+    
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+  </style>
+</head>
+<body>
+  {% include 'base_nav.html' %}
+
+  <!-- Main Content -->
+  <main id="main" class="main">
+    <div class="pagetitle">
+      <h2>Dashboard</h2>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="UserDashboard">Home</a></li>
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </nav>
+    </div>
+
+    <section class="section dashboard">
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <script>
+              document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                  title: '{{ category|title }}',
+                  text: '{{ message }}',
+                  icon: '{{ "error" if category == "danger" else "success" }}',
+                  showConfirmButton: false,
+                  timer: 2000,
+                  timerProgressBar: true,
+                });
+              });
+            </script>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <!-- Cards Container -->
+      <div class="row g-4 mt-4">
+        <!-- Overall File Size Card -->
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card info-card h-100 shadow-sm">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-primary-light me-3">
+                  <i class="bi bi-file-earmark text-primary fs-4"></i>
+                </div>
+                <div>
+                  <h5 class="card-title fw-bold mb-0">Overall File Size</h5>
+                  <p class="text-muted small mb-1">Total uploaded content</p>
+                </div>
+              </div>
+              <div class="mt-3 text-center">
+                <h3 class="fw-bold">{{ "%.2f"|format(total_uploaded_gb) }} GB</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Storage Quota Card -->
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card info-card h-100 shadow-sm">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-success-light me-3">
+                  <i class="bi bi-hdd text-success fs-4"></i>
+                </div>
+                <div>
+                  <h5 class="card-title fw-bold mb-0">Storage Quota</h5>
+                  <p class="text-muted small mb-1">Available space</p>
+                </div>
+              </div>
+              <div class="mt-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="fw-bold">{{ "%.2f"|format(total_uploaded_gb) }} GB / {{ storage_quota }} GB</span>
+                  <span class="badge bg-{{ 'danger' if storage_usage_percentage > 90 else 'warning' if storage_usage_percentage > 70 else 'success' }}">
+                    {{ "%.1f"|format(storage_usage_percentage) }}%
+                  </span>
+                </div>
+                <div class="progress" style="height: 10px;">
+                  <div class="progress-bar bg-{{ 'danger' if storage_usage_percentage > 90 else 'warning' if storage_usage_percentage > 70 else 'success' }}" 
+                       role="progressbar" 
+                       style="width: {{ storage_usage_percentage }}%;" 
+                       aria-valuenow="{{ storage_usage_percentage }}" 
+                       aria-valuemin="0" 
+                       aria-valuemax="100"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Threats Detected Card -->
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card info-card h-100 shadow-sm">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-danger-light me-3">
+                  <i class="bi bi-shield-exclamation text-danger fs-4"></i>
+                </div>
+                <div>
+                  <h5 class="card-title fw-bold mb-0">Threats Detected</h5>
+                  <p class="text-muted small mb-1">Security issues found</p>
+                </div>
+              </div>
+              <div class="mt-3 text-center">
+                <h3 class="fw-bold">{{ get_user_threats(current_user.id)|length }}</h3>
+                <button class="btn btn-sm btn-outline-danger mt-1" 
+                        style="font-size: 0.8rem; padding: 0.25rem 0.5rem;" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#threatsModal">
+                  <i class="bi bi-eye me-1"></i> View Details
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- File Statistics Card -->
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card info-card h-100 shadow-sm">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-info-light me-3">
+                  <i class="bi bi-file-earmark-bar-graph text-info fs-4"></i>
+                </div>
+                <div>
+                  <h5 class="card-title fw-bold mb-0">File Statistics</h5>
+                  <p class="text-muted small mb-1">File types and distribution</p>
+                </div>
+              </div>
+              <div class="mt-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="fw-bold">Total Files:</span>
+                  <span class="badge bg-info">{{ file_size_breakdown.total_count }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2 small">
+                  <span><i class="bi bi-circle-fill text-success me-1"></i> Small Files:</span>
+                  <span>{{ file_size_breakdown.small_count }} ({{ "%.1f"|format(file_size_breakdown.small_gb) }} GB)</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3 small">
+                  <span><i class="bi bi-circle-fill text-warning me-1"></i> Medium Files:</span>
+                  <span>{{ file_size_breakdown.medium_count }} ({{ "%.1f"|format(file_size_breakdown.medium_gb) }} GB)</span>
+                </div>
+                {% if file_size_breakdown.top_extensions %}
+                <div class="small text-muted mb-2">Top file type: {{ file_size_breakdown.top_extensions[0].extension }} ({{ file_size_breakdown.top_extensions[0].count }} files)</div>
+                {% endif %}
+                <div class="text-center mt-3">
+                  <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#fileSizeModal">
+                    <i class="bi bi-bar-chart-line me-1"></i> View Detailed Stats
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Threats Modal -->
+  <div class="modal fade" id="threatsModal" tabindex="-1" aria-labelledby="threatsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="threatsModalLabel"><i class="bi bi-shield-exclamation me-2"></i>Detected Threats</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-warning mb-3" style="font-size: 0.9rem; padding: 0.5rem 1rem; line-height: 1.3;">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong>Security Alert</strong> <br> The following files were flagged as potential security threats. Files you attempted to share were blocked. Files sent to you with threats were also blocked for your protection.
+          </div>
+          
+          <div class="table-responsive">
+            <table class="table table-hover table-striped">
+              <thead class="table-danger">
+                <tr>
+                  <th scope="col">File Name</th>
+                  <th scope="col">Threat Type</th>
+                  <th scope="col">Owner/Sender</th>
+                  <th scope="col">Recipient</th>
+                  <th scope="col">Detected At</th>
+                </tr>
+              </thead>
+              <tbody id="threatTableBody">
+                {% set threats = get_user_threats(current_user.id) %}
+                {% if threats|length > 0 %}
+                  {% for threat in threats %}
+                  <tr class="threat-item" data-page="{{ (loop.index0 // 5) + 1 }}" style="display: none;">
+                    <td data-label="File Name">
+                      <i class="bi bi-file-earmark-x text-danger me-2"></i>
+                      {{ threat.file_name }}
+                    </td>
+                    <td data-label="Threat Type">
+                      <span class="badge bg-danger">{{ threat.threat_type if threat.threat_type else "Malware" }}</span>
+                    </td>
+                    <td data-label="Owner/Sender">
+                      {% if threat.owner_id == current_user.id %}
+                        <span class="text-muted"><i class="bi bi-person-lock me-1"></i>You (Owner)</span>
+                      {% elif threat.receiver_id == current_user.id %}
+                        <a href="#" class="text-decoration-none">
+                          <img src="{{ url_for('profile_picture', user_id=threat.owner_id) }}" alt="Sender" class="rounded-circle me-1" width="24" height="24">
+                          {{ threat.owner_username if threat.owner_username else "Unknown User" }}
+                          <span class="badge bg-warning ms-1">Sent to you</span>
+                        </a>
+                      {% elif threat.sender_id %}
+                        <a href="#" class="text-decoration-none">
+                          <img src="{{ url_for('profile_picture', user_id=threat.sender_id) }}" alt="Sender" class="rounded-circle me-1" width="24" height="24">
+                          {{ threat.sender_username if threat.sender_username else "Unknown User" }}
+                          {% if threat.owner_id %}<span class="badge bg-secondary ms-1">ID: {{ threat.owner_id }}</span>{% endif %}
+                        </a>
+                      {% else %}
+                        <span class="text-muted"><i class="bi bi-shield me-1"></i>System Scan</span>
+                      {% endif %}
+                    </td>
+                    <td data-label="Recipient">
+                      {% if threat.receiver_id == current_user.id %}
+                        <span class="text-muted"><i class="bi bi-person-check me-1"></i>You</span>
+                      {% elif threat.receiver_id %}
+                        <a href="#" class="text-decoration-none">
+                          <img src="{{ url_for('profile_picture', user_id=threat.receiver_id) }}" alt="Recipient" class="rounded-circle me-1" width="24" height="24">
+                          {{ threat.receiver_username if threat.receiver_username else "Unknown User" }}
+                        </a>
+                      {% else %}
+                        <span class="text-muted">-</span>
+                      {% endif %}
+                    </td>
+                    <td data-label="Detected At">{{ threat.detected_at }}</td>
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                <tr id="noThreatsRow">
+                  <td colspan="5" class="text-center py-4">
+                    <i class="bi bi-shield-check text-success fs-3 d-block mb-2"></i>
+                    <p class="mb-0">No threats detected</p>
+                    <p class="text-muted small">Your account is secure</p>
+                  </td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+          
+          {% if threats|length > 0 %}
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <div>
+              <small class="text-muted">Showing <span id="currentPageStart">1</span>-<span id="currentPageEnd">{% if threats|length < 5 %}{{ threats|length }}{% else %}5{% endif %}</span> of {{ threats|length }} threats</small>
+            </div>
+            <nav aria-label="Threats pagination">
+              <ul class="pagination pagination-sm mb-0">
+                <li class="page-item disabled" id="prevPageBtn">
+                  <a class="page-link" href="javascript:void(0)" onclick="changePage('prev')" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                {% set total_pages = ((threats|length - 1) // 5) + 1 %}
+                {% for i in range(1, total_pages + 1) %}
+                <li class="page-item {% if i == 1 %}active{% endif %}" id="pageBtn{{ i }}">
+                  <a class="page-link" href="javascript:void(0)" onclick="changePage({{ i }})">{{ i }}</a>
+                </li>
+                {% endfor %}
+                <li class="page-item {% if total_pages <= 1 %}disabled{% endif %}" id="nextPageBtn">
+                  <a class="page-link" href="javascript:void(0)" onclick="changePage('next')" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          {% endif %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- File Statistics Modal -->
+  <div class="modal fade" id="fileSizeModal" tabindex="-1" aria-labelledby="fileSizeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="fileSizeModalLabel"><i class="bi bi-file-earmark-bar-graph me-2"></i>File Statistics</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h6 class="text-center mb-3">Size Distribution</h6>
+              <div style="height: 250px;">
+                <canvas id="fileSizeChart"></canvas>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <h6 class="text-center mb-3">File Types</h6>
+              <div style="height: 250px;">
+                <canvas id="fileExtensionChart"></canvas>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row mt-4">
+            <div class="col-12">
+              <h6 class="text-center mb-3">Top File Extensions</h6>
+              <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Extension</th>
+                      <th>Count</th>
+                      <th>Size</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for ext in file_size_breakdown.top_extensions %}
+                    <tr>
+                      <td>{{ ext.extension }}</td>
+                      <td>{{ ext.count }}</td>
+                      <td>{{ ext.size_mb }} MB</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                      <td colspan="3" class="text-center">No files uploaded yet</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Optimized Script Loading -->
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+
+  <!-- Optimized Loading Script -->
+  <script>
+    // Mark body as loaded to prevent FOUC
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.classList.add('loaded');
+      
+      // Initialize cards with loaded state
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        card.classList.add('loaded');
+      });
+    });
+
+    // Threat pagination script
+    let currentPage = 1;
+    let totalPages = {{ ((get_user_threats(current_user.id)|length - 1) // 5) + 1 }};
+    
+    // Initialize pagination when modal opens
+    document.addEventListener('DOMContentLoaded', function() {
+      const threatsModal = document.getElementById('threatsModal');
+      if (threatsModal) {
+        threatsModal.addEventListener('shown.bs.modal', function() {
+          initThreatsPagination();
+        });
+      }
+    });
+    
+    function initThreatsPagination() {
+      currentPage = 1;
+      changePage(1);
+    }
+    
+    function changePage(page) {
+      // Handle prev/next navigation
+      if (page === 'prev') {
+        if (currentPage > 1) {
+          currentPage--;
+        } else {
+          return;
+        }
+      } else if (page === 'next') {
+        if (currentPage < totalPages) {
+          currentPage++;
+        } else {
+          return;
+        }
+      } else {
+        currentPage = page;
+      }
+      
+      // Update active page button
+      document.querySelectorAll('.pagination .page-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      const activePageBtn = document.getElementById('pageBtn' + currentPage);
+      if (activePageBtn) {
+        activePageBtn.classList.add('active');
+      }
+      
+      // Enable/disable prev/next buttons
+      document.getElementById('prevPageBtn').classList.toggle('disabled', currentPage === 1);
+      document.getElementById('nextPageBtn').classList.toggle('disabled', currentPage === totalPages);
+      
+      // Show/hide threat items based on current page
+      const threatItems = document.querySelectorAll('.threat-item');
+      threatItems.forEach(item => {
+        const itemPage = parseInt(item.getAttribute('data-page'));
+        item.style.display = itemPage === currentPage ? '' : 'none';
+      });
+      
+      // Update page info text
+      const totalThreats = {{ get_user_threats(current_user.id)|length }};
+      const start = (currentPage - 1) * 5 + 1;
+      const end = Math.min(currentPage * 5, totalThreats);
+      
+      const startElem = document.getElementById('currentPageStart');
+      const endElem = document.getElementById('currentPageEnd');
+      if (startElem && endElem) {
+        startElem.textContent = start;
+        endElem.textContent = end;
+      }
+    }
+
+    // Initialize charts when modal opens
+    document.addEventListener('DOMContentLoaded', function() {
+      const fileSizeModal = document.getElementById('fileSizeModal');
+      if (fileSizeModal) {
+        fileSizeModal.addEventListener('shown.bs.modal', function() {
+          // File Size Chart
+          const sizeCtx = document.getElementById('fileSizeChart');
+          if (sizeCtx) {
+            new Chart(sizeCtx, {
+              type: 'doughnut',
+              data: {
+                datasets: [{
+                  data: [{{ file_size_breakdown.small_gb }}, {{ file_size_breakdown.medium_gb }}],
+                  backgroundColor: ['#28a745', '#ffc107'],
+                  borderWidth: 1
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+              }
+            });
+          }
+          
+          // File Extensions Chart
+          const extCtx = document.getElementById('fileExtensionChart');
+          if (extCtx) {
+            const extensions = [];
+            const counts = [];
+            
+            {% for ext in file_size_breakdown.top_extensions %}
+              extensions.push('{{ ext.extension }}');
+              counts.push({{ ext.count }});
+            {% endfor %}
+            
+            new Chart(extCtx, {
+              type: 'bar',
+              data: {
+                labels: extensions,
+                datasets: [{
+                  label: 'File Count',
+                  data: counts,
+                  backgroundColor: ['#4bc0c0', '#36a2eb', '#9966ff', '#ff9f40', '#ffcd56'],
+                  borderWidth: 1
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: { legend: { display: false } }
+              }
+            });
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

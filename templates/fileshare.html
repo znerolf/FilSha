@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fileshare</title>
+
+  <link href="{{ url_for('static', filename='img/logo.png') }}" rel="icon">
+  <link href="{{ url_for('static', filename='img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+  <!-- SweetAlert2 CSS and JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Bootstrap -->
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"></noscript>
+  <!-- SparkMD5 Library for MD5 Hashing -->
+  <script src="{{ url_for('static', filename='js/user/spark-md5.min.js') }}"></script>
+
+  <!-- Template Main CSS File -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/user/fileshare.css') }}" rel="stylesheet">
+
+  <!-- Socket.IO Client Library -->
+  <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+  
+  <!-- Select2 CSS and JS for enhanced dropdowns -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+</head>
+<body>
+  {% include 'base_nav.html' %}
+
+  <!-- ======= Main Content ======= -->
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h2>File Share</h2>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                  {% for category, message in messages %}
+                    <div id="flash-message" class="{{ 'flash-message' if category == 'danger' else 'success-message' }}">
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+                {% endwith %}
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('userdashboard') }}">Home</a></li>
+        <li class="breadcrumb-item active">File Share</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+  
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs nav-justified mb-4" id="fileTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="share-tab" data-bs-toggle="tab" data-bs-target="#share-files" type="button" role="tab" aria-controls="share-files" aria-selected="true">
+              <i class="bi bi-upload me-2"></i>Share Files
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="your-files-tab" data-bs-toggle="tab" data-bs-target="#your-files" type="button" role="tab" aria-controls="your-files" aria-selected="false">
+              <i class="bi bi-folder me-2"></i>Your Files
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="shared-tab" data-bs-toggle="tab" data-bs-target="#shared-files" type="button" role="tab" aria-controls="shared-files" aria-selected="false">
+              <i class="bi bi-share me-2"></i>Shared With You
+            </button>
+          </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="fileTabsContent">
+          <!-- Share Files Tab -->
+          <div class="tab-pane fade show active" id="share-files" role="tabpanel" aria-labelledby="share-tab">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Share New Files</h5>
+            
+                <!-- Enhanced File Upload Form -->
+                <form method="POST" enctype="multipart/form-data" onsubmit="handleFileScan(event)">
+                  <div class="mb-3">
+                    <!-- Compact Drag & Drop Zone -->
+                    <div id="drag-drop-area" class="drag-drop-zone p-3 text-center border-2 border-dashed rounded-3">
+                      <div class="drop-icon mb-2">
+                        <i class="bi bi-cloud-arrow-up" style="font-size: 2rem; color: #4154f1;"></i>
+                      </div>
+                      <h6 class="mb-1">Drag & Drop Files Here</h6>
+                      <p class="text-muted small mb-2">or</p>
+                      <label for="fileUpload" class="btn btn-primary">
+                        <i class="bi bi-folder-plus me-1"></i>Browse Files
+                      </label>
+                      <input type="file" class="form-control visually-hidden" id="fileUpload" name="file" required multiple
+                            onchange="updateFileList(this)">
+                      <p class="mt-2 text-muted small">Maximum file size: 1 GB</p>
+                    </div>
+                    
+                    <!-- Selected Files List -->
+                    <div id="selected-files" class="mt-2 d-none">
+                      <h6 class="mb-2"><i class="bi bi-list-check me-1"></i>Selected Files:</h6>
+                      <ul id="file-list" class="list-group list-group-flush small"></ul>
+                      <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span id="total-file-size" class="badge bg-primary"><i class="bi bi-hdd me-1"></i>Total: 0 Bytes</span>
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="clearFiles()">
+                          <i class="bi bi-x-circle me-1"></i>Clear All Files
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div id="fileSizeError" class="alert alert-danger mt-2 py-2 small" style="display: none;">
+                      File size exceeds the maximum limit of 1 GB.
+                    </div>
+                  </div>
+                  
+                  <!-- Sharing Options Section -->
+                  <div class="card mb-3 border-0 bg-light">
+                    <div class="card-body p-3">
+                      <h6 class="card-subtitle mb-3 text-primary"><i class="bi bi-share me-2"></i>Sharing Options</h6>
+                      
+                      <div class="mb-4">
+                        <label for="recipient" class="form-label fw-semibold">
+                          <i class="bi bi-people-fill me-1"></i>Select Recipients
+                        </label>
+                        <select class="form-select" id="recipient" name="shared_with" multiple required>
+                          {% for user in all_users %}
+                            <option value="{{ user.username }}" data-user-id="{{ user.id }}">
+                              {{ user.first_name }} {{ user.last_name }} ({{ user.username }}) - {{ user.role | replace('-', ' ') | title }}
+                            </option>
+                          {% endfor %}
+                        </select>
+                        <small class="form-text text-muted mt-2">
+                          <i class="bi bi-info-circle me-1"></i>
+                          Click to select multiple recipients. Use the search box to find users quickly.
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- File Settings Section -->
+                  <div class="card mb-3 border-0 bg-light">
+                    <div class="card-body p-3">
+                      <h6 class="card-subtitle mb-3 text-primary"><i class="bi bi-gear me-2"></i>File Settings</h6>
+                      
+                      <div class="row">
+                        <div class="col-md-6 mb-3">
+                          <label for="expiration_duration" class="form-label fw-semibold">
+                            <i class="bi bi-hourglass-split me-1"></i>Expiration Duration
+                          </label>
+                          <select class="form-select" id="expiration_duration" name="expiration_duration">
+                            <option value="">No Expiration</option>
+                            <option value="1h">1 Hour</option>
+                            <option value="1d">1 Day</option>
+                            <option value="1w">1 Week</option>
+                          </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                          <label for="file_password" class="form-label fw-semibold">
+                            <i class="bi bi-lock me-1"></i>Password Protection
+                          </label>
+                          <input type="password" class="form-control" id="file_password" name="file_password" autocomplete="new-password" placeholder="Leave empty for no password">
+                        </div>
+                      </div>
+                      
+                      <div class="form-check mb-0">
+                        <input type="checkbox" class="form-check-input" id="delete_after_download" name="delete_after_download">
+                        <label class="form-check-label" for="delete_after_download">
+                          <i class="bi bi-trash me-1"></i>Delete file after download
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Upload Progress Bar -->
+                  <div id="upload-progress-container" class="mt-3 d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <span id="progress-filename" class="small text-truncate"></span>
+                      <span id="progress-percentage" class="small">0%</span>
+                    </div>
+                    <div class="progress" style="height: 20px;">
+                      <div id="upload-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                           role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                      </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-1">
+                      <span id="upload-speed" class="small text-muted">0 KB/s</span>
+                      <span id="upload-size" class="small text-muted">0 KB / 0 KB</span>
+                    </div>
+                  </div>
+                  
+                  <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-primary" id="upload-btn">
+                      <i class="bi bi-upload me-2"></i>Upload & Share
+                      <span id="upload-spinner" class="spinner-border spinner-border-sm ms-1 d-none" role="status" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </form>
+          
+                <!-- Loading animation -->
+                <div id="loading-message" class="loading text-center mt-3" style="display: none;">
+                  <div class="spinner-border text-primary mb-2" role="status">
+                    <span class="visually-hidden">Scanning file...</span>
+                  </div>
+                  <p>Please Wait...</p>
+                </div>
+                <div id="status-message" class="mt-3"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Your Files Tab -->
+          <div class="tab-pane fade" id="your-files" role="tabpanel" aria-labelledby="your-files-tab">
+            <div class="card">
+              <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h4 class="mb-0"><i class="bi bi-folder me-2"></i>Your Files</h4>
+                  <div class="input-group input-group-sm" style="max-width: 300px;">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control table-search" id="search-your-files" placeholder="Search files..." data-table="your-files-table">
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                {% if user_files %}
+                  <div class="table-responsive">
+                      <table class="table table-hover table-striped align-middle" id="your-files-table">
+                          <thead class="table-light">
+                            <tr>
+                              <th scope="col" class="sortable" data-sort="name">
+                                <i class="bi bi-file-earmark me-1"></i>File Name
+                                <i class="bi bi-arrow-down-up sort-icon ms-1"></i>
+                              </th>
+                              <th scope="col"><i class="bi bi-info-circle me-1"></i>Status</th>
+                              <th scope="col"><i class="bi bi-hdd me-1"></i>Size</th>
+                              <th scope="col"><i class="bi bi-share me-1"></i>Sent To</th>
+                              <th scope="col"><i class="bi bi-calendar-date me-1"></i>Created Date</th>
+                              <th scope="col"><i class="bi bi-clock me-1"></i>Expiration Time</th>
+                              <th scope="col"><i class="bi bi-gear me-1"></i>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for file in user_files %}
+                              <tr>
+                                <td class="text-truncate" style="max-width: 150px;" data-bs-toggle="tooltip" title="{{ file.filename }}">
+                                  <div class="d-flex align-items-center">
+                                    <i class="bi bi-file-earmark me-2 text-primary"></i>
+                                    <span class="text-truncate fw-medium">{{ file.filename }}</span>
+                                  </div>
+                                </td>
+                                <td>
+                                  {% if file.delete_after_download and file.password %}
+                                    <span class="badge bg-danger" data-bs-toggle="tooltip" title="Delete After Download & Password Protected"><i class="bi bi-trash me-1"></i><i class="bi bi-lock me-1"></i>Protected & Delete</span>
+                                  {% elif file.delete_after_download %}
+                                    <span class="badge bg-danger"><i class="bi bi-trash me-1"></i>Delete After Download</span>
+                                  {% elif file.password %}
+                                    <span class="badge bg-success"><i class="bi bi-lock me-1"></i>Password Protected</span>
+                                  {% else %}
+                                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Standard</span>
+                                  {% endif %}
+                                </td>
+                                <td data-label="Size (MB)">
+                                  <span class="badge bg-dark text-white d-inline-flex align-items-center">
+                                    <i class="bi bi-hdd me-1"></i>{{ file.size or 'N/A' }} MB
+                                  </span>
+                                </td>
+                                <td data-bs-toggle="tooltip" title="{{ file.shared_with }}">
+                                  <span class="badge bg-primary-subtle text-primary d-inline-flex align-items-start flex-column" style="max-width: 150px; white-space: normal; text-align: left;">
+                                    <div class="d-flex align-items-center w-100 mb-1">
+                                      <i class="bi bi-people me-1 flex-shrink-0"></i>
+                                      <span class="fw-semibold">Recipients:</span>
+                                    </div>
+                                    {% for user in file.shared_with.split(',') %}
+                                      <span class="text-truncate">• {{ user.strip() }}</span>
+                                    {% endfor %}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span class="badge bg-warning text-dark d-inline-flex align-items-center text-start" style="max-width: 200px; white-space: normal; padding: 8px; line-height: 1.2;">
+                                    <i class="bi bi-calendar-check me-2 flex-shrink-0"></i>
+                                    <span>{{ file.created_at }}</span>
+                                  </span>
+                                </td>
+                                <td>
+                                  {% if file.expiration_time %}
+                                  <span class="badge bg-danger text-white d-inline-flex align-items-center text-start" style="max-width: 150px; white-space: normal;">
+                                    <i class="bi bi-hourglass-split me-1 flex-shrink-0"></i>
+                                    <span>{{ file.expiration_time }}</span>
+                                  </span>
+                                  {% else %}
+                                    <span class="badge bg-secondary"><i class="bi bi-infinity me-1"></i>No Expiration</span>
+                                  {% endif %}
+                                </td>
+                                <td>
+                                  <div class="btn-group btn-group-sm" role="group" aria-label="File Actions">
+                                    <a href="{{ url_for('download', file_id=file.id) }}" class="btn btn-success download-btn" data-bs-toggle="tooltip" title="Download">
+                                      <i class="bi bi-download"></i>
+                                      <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                    </a>
+                                    <button class="btn btn-warning rename-btn"
+                                      data-bs-toggle="tooltip" 
+                                      data-file-id="{{ file.id }}" 
+                                      data-current-filename="{{ file.filename | replace('.' ~ file.filename.split('.') | last, '') }}"  
+                                      data-bs-target="#renameFileModal"
+                                      title="Rename">
+                                      <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger"
+                                      data-bs-toggle="tooltip"  
+                                      data-bs-target="#deleteConfirmModal" 
+                                      data-file-id="{{ file.id }}"
+                                      data-filename="{{ file.filename }}"
+                                      title="Delete">
+                                      <i class="bi bi-trash"></i>
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                  </div>
+                {% else %}
+                  <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle-fill me-2"></i> No files uploaded yet.
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Shared With You Tab -->
+          <div class="tab-pane fade" id="shared-files" role="tabpanel" aria-labelledby="shared-tab">
+            <div class="card">
+              <div class="card-header bg-success text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h4 class="mb-0"><i class="bi bi-share me-2"></i>Files Shared With You</h4>
+                  <div class="input-group input-group-sm" style="max-width: 300px;">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control table-search" id="search-shared-files" placeholder="Search files..." data-table="shared-files-table">
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                {% if shared_files %}
+                  <div class="table-responsive">
+                      <table class="table table-hover table-striped align-middle" id="shared-files-table">
+                          <thead class="table-light">
+                            <tr>
+                              <th scope="col"><i class="bi bi-file-earmark me-1"></i>File Name</th>
+                              <th scope="col"><i class="bi bi-info-circle me-1"></i>Status</th>
+                              <th scope="col"><i class="bi bi-person me-1"></i>Owner</th>
+                              <th scope="col"><i class="bi bi-calendar-date me-1"></i>Created Date</th>
+                              <th scope="col"><i class="bi bi-clock me-1"></i>Expiration Time</th>
+                              <th scope="col"><i class="bi bi-hdd me-1"></i>Size</th>
+                              <th scope="col"><i class="bi bi-gear me-1"></i>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for file in shared_files %}
+                              <tr>
+                                <td class="text-truncate" style="max-width: 150px;" data-bs-toggle="tooltip" title="{{ file.filename }}">
+                                  <div class="d-flex align-items-center">
+                                    <i class="bi bi-file-earmark me-2 text-primary"></i>
+                                    <span class="text-truncate fw-medium">{{ file.filename }}</span>
+                                  </div>
+                                </td>
+                                <td>
+                                  {% if file.delete_after_download and file.password %}
+                                    <span class="badge bg-danger" data-bs-toggle="tooltip" title="Delete After Download & Password Protected"><i class="bi bi-trash me-1"></i><i class="bi bi-lock me-1"></i>Protected & Delete</span>
+                                  {% elif file.delete_after_download %}
+                                    <span class="badge bg-danger"><i class="bi bi-trash me-1"></i>Delete After Download</span>
+                                  {% elif file.password %}
+                                    <span class="badge bg-success"><i class="bi bi-lock me-1"></i>Password Protected</span>
+                                  {% else %}
+                                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Standard</span>
+                                  {% endif %}
+                                </td>
+                                <td>{{ file.owner_username }}</td>
+                                <td>
+                                  <span class="badge bg-warning text-dark d-inline-flex align-items-center text-start" style="max-width: 200px; white-space: normal; padding: 8px; line-height: 1.2;">
+                                    <i class="bi bi-calendar-check me-2 flex-shrink-0"></i>
+                                    <span>{{ file.created_at }}</span>
+                                  </span>
+                                </td>
+                                <td>
+                                  {% if file.expiration_time %}
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>{{ file.expiration_time }}</span>
+                                  {% else %}
+                                    <span class="badge bg-secondary"><i class="bi bi-infinity me-1"></i>No Expiration</span>
+                                  {% endif %}
+                                </td>
+                                <td data-label="Size (MB)">
+                                  <span class="badge bg-dark text-white d-inline-flex align-items-center">
+                                    <i class="bi bi-hdd me-1"></i>{{ file.size or 'N/A' }} MB
+                                  </span>
+                                </td>
+                                <td>
+                                  <a href="{{ url_for('download', file_id=file.id) }}" class="btn btn-success download-btn" data-bs-toggle="tooltip" title="Download">
+                                    <i class="bi bi-download"></i> Download
+                                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                  </a>
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                  </div>
+                {% else %}
+                  <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle-fill me-2"></i> No files shared with you yet.
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main><!-- End #main -->
+
+
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/simple-datatables/simple-datatables.js') }}"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+
+
+  <!-- Rename file modal -->
+
+<div class="modal fade" id="renameFileModal" tabindex="-1" aria-labelledby="renameFileModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="renameFileModalLabel">Rename File</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- In the renameFileModal div -->
+      <form id="renameFileForm" method="POST" action="{{ url_for('rename_file', file_id=0) }}" onsubmit="updateFormAction(this)">
+        <div class="mb-3">
+          <label for="new_filename" class="form-label">New Filename</label>
+          <input type="text" class="form-control" id="new_filename" name="new_filename" required>
+        </div>
+        <input type="hidden" id="file_id" name="file_id">
+        <input type="hidden" id="current_filename" name="current_filename">
+      </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" form="renameFileForm" class="btn btn-warning">Rename</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Deletion</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete <span id="filename-to-delete"></span>?</p>
+        <p class="text-danger">This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form id="deleteFileForm" method="POST" action="">
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Password Verification Modal -->
+<div class="modal fade" id="passwordVerificationModal" tabindex="-1" aria-labelledby="passwordVerificationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="passwordVerificationModalLabel">
+          <i class="bi bi-file-earmark-bar-lock me-2"></i>Password Required
+        </h5>
+      </div>
+      <div class="modal-body">
+        <p>This file is password protected. Please enter the password to download.</p>
+        <form id="passwordVerificationForm" method="POST">
+          <div class="mb-3">
+            <label for="file_password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="file_password" name="file_password" autocomplete="new-password" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelPasswordBtn">Cancel</button>
+        <button type="submit" form="passwordVerificationForm" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+<script src="{{ url_for('static', filename='js/user/fileshare.js') }}"></script>
+
+<footer id="footer" class="footer">
+  <div class="copyright">
+    &copy; Copyright <strong><span>FilSha</span></strong>. All Rights Reserved
+  </div>
+</footer><!-- End Footer -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Check if password prompt is needed
+    {% if password_prompt %}
+      const modal = new bootstrap.Modal(document.getElementById('passwordVerificationModal'));
+      
+      // Show modal with a slight delay to prevent race conditions
+      setTimeout(() => {
+        modal.show();
+      }, 100);
+      
+      // Ensure modal is properly hidden when canceled
+      document.getElementById('cancelPasswordBtn').addEventListener('click', function() {
+        modal.hide();
+        // Redirect back to fileshare page to clear any URL parameters
+        window.location.href = "{{ url_for('fileshare') }}";
+      });
+      
+      // Handle form submission
+      document.getElementById('passwordVerificationForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission
+        
+        // Get the form data
+        const formData = new FormData(this);
+        const fileId = {{ file_id }};
+        
+        // Hide the modal
+        modal.hide();
+        
+        // Show loading indicator
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.id = 'download-loading';
+        loadingIndicator.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2">Preparing your download...</p>';
+        loadingIndicator.style.position = 'fixed';
+        loadingIndicator.style.top = '50%';
+        loadingIndicator.style.left = '50%';
+        loadingIndicator.style.transform = 'translate(-50%, -50%)';
+        loadingIndicator.style.background = 'white';
+        loadingIndicator.style.padding = '20px';
+        loadingIndicator.style.borderRadius = '5px';
+        loadingIndicator.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
+        loadingIndicator.style.zIndex = '9999';
+        loadingIndicator.style.textAlign = 'center';
+        document.body.appendChild(loadingIndicator);
+        
+        // Submit the form via AJAX
+        fetch('/download/' + fileId, {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: formData
+        })
+        .then(response => {
+          if (response.ok) {
+            // Create a hidden link and click it to trigger the download
+            return response.blob().then(blob => {
+              // Remove loading indicator
+              document.body.removeChild(loadingIndicator);
+              
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.style.display = 'none';
+              a.href = url;
+              // Get filename from Content-Disposition header if available
+              const contentDisposition = response.headers.get('Content-Disposition');
+              let filename = 'download';
+              if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename="(.+)"/i);
+                if (filenameMatch && filenameMatch[1]) {
+                  filename = filenameMatch[1];
+                }
+              }
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
+              window.URL.revokeObjectURL(url);
+              
+              // Show success message
+              const successMessage = document.createElement('div');
+              successMessage.className = 'alert alert-success';
+              successMessage.style.position = 'fixed';
+              successMessage.style.top = '20px';
+              successMessage.style.right = '20px';
+              successMessage.style.zIndex = '9999';
+              successMessage.style.padding = '10px 20px';
+              successMessage.innerHTML = '<i class="bi bi-check-circle me-2"></i>Download started successfully!';
+              document.body.appendChild(successMessage);
+              
+              // Redirect after download starts
+              setTimeout(function() {
+                window.location.href = "{{ url_for('fileshare') }}";
+              }, 1500);
+            });
+          } else {
+            // Remove loading indicator
+            document.body.removeChild(loadingIndicator);
+            
+            // Handle error based on status code
+            if (response.status === 401) {
+              alert('Incorrect password. Please try again.');
+            } else if (response.status === 404) {
+              alert('File not found on server.');
+            } else {
+              alert('Download failed. Please try again.');
+            }
+            window.location.href = "{{ url_for('fileshare') }}";
+          }
+        })
+        .catch(error => {
+          // Remove loading indicator
+          if (document.getElementById('download-loading')) {
+            document.body.removeChild(loadingIndicator);
+          }
+          
+          console.error('Error:', error);
+          alert('An error occurred during download.');
+          window.location.href = "{{ url_for('fileshare') }}";
+        });
+      });
+      
+      // Handle Enter key press in the password field
+      document.getElementById('file_password').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+          event.preventDefault(); // Prevent default behavior
+          document.getElementById('passwordVerificationForm').dispatchEvent(new Event('submit'));
+        }
+      });
+      
+      // Also ensure modal closing redirects
+      document.getElementById('passwordVerificationModal').addEventListener('hidden.bs.modal', function() {
+        // Only redirect if we're on the password verification page
+        if (window.location.href.includes('file_id')) {
+          window.location.href = "{{ url_for('fileshare') }}";
+        }
+      });
+    {% endif %}
+  });
+</script>
+
+<!-- Add this JavaScript to handle drag and drop functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const dropArea = document.getElementById('drag-drop-area');
+    const fileInput = document.getElementById('fileUpload');
+    const fileList = document.getElementById('file-list');
+    const selectedFiles = document.getElementById('selected-files');
+    
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, preventDefaults, false);
+      document.body.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    // Highlight drop area when item is dragged over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropArea.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, unhighlight, false);
+    });
+    
+    // Handle dropped files
+    dropArea.addEventListener('drop', handleDrop, false);
+    
+    // Click to select files - only trigger on the area itself, not on its children
+    dropArea.addEventListener('click', function(e) {
+      // Only trigger file input click if the click was directly on the drop area
+      // and not on any of its children (like the Browse Files button)
+      if (e.target === dropArea) {
+        fileInput.click();
+      }
+    });
+    
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    function highlight() {
+      dropArea.classList.add('drag-over');
+    }
+    
+    function unhighlight() {
+      dropArea.classList.remove('drag-over');
+    }
+    
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      
+      if (files.length > 0) {
+        fileInput.files = files;
+        updateFileList(fileInput);
+      }
+    }
+  });
+  
+  // Store selected files in a global array
+  let selectedFilesList = [];
+  
+  function updateFileList(input) {
+    const fileList = document.getElementById('file-list');
+    const selectedFiles = document.getElementById('selected-files');
+    const totalFileSize = document.getElementById('total-file-size');
+    const files = input.files;
+    
+    // Check file size
+    let validFiles = true;
+    const maxSize = 1024 * 1024 * 1024; // 1GB in bytes
+    
+    if (files.length > 0) {
+      // Add new files to our global array
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        if (file.size > maxSize) {
+          document.getElementById('fileSizeError').style.display = 'block';
+          validFiles = false;
+          continue;
+        }
+        
+        // Check if file with same name already exists in our list
+        const fileExists = selectedFilesList.some(existingFile => existingFile.name === file.name);
+        if (!fileExists) {
+          selectedFilesList.push(file);
+        }
+      }
+      
+      // Rebuild the file list display
+      fileList.innerHTML = '';
+      let totalSize = 0;
+      
+      selectedFilesList.forEach(file => {
+        const fileItem = document.createElement('li');
+        fileItem.className = 'list-group-item file-item';
+        
+        const fileSize = formatFileSize(file.size);
+        const fileType = getFileIconClass(file.name);
+        totalSize += file.size;
+        
+        fileItem.innerHTML = `
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <i class="${fileType} me-2" style="font-size: 1.2rem;"></i>
+              <span class="file-name">${file.name}</span>
+            </div>
+            <span class="file-size badge bg-info text-dark ms-2">${fileSize}</span>
+          </div>
+        `;
+        
+        fileList.appendChild(fileItem);
+      });
+      
+      // Update total size display
+      totalFileSize.innerHTML = `<i class="bi bi-hdd me-1"></i>Total: ${formatFileSize(totalSize)}`;
+      
+      // Show the selected files container
+      if (selectedFilesList.length > 0) {
+        selectedFiles.classList.remove('d-none');
+      } else {
+        selectedFiles.classList.add('d-none');
+      }
+    }
+    
+    return validFiles;
+  }
+  
+  function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+  
+  function getFileIconClass(filename) {
+    const ext = filename.split('.').pop().toLowerCase();
+    
+    const iconMap = {
+      'pdf': 'bi bi-file-earmark-pdf',
+      'doc': 'bi bi-file-earmark-word',
+      'docx': 'bi bi-file-earmark-word',
+      'xls': 'bi bi-file-earmark-excel',
+      'xlsx': 'bi bi-file-earmark-excel',
+      'ppt': 'bi bi-file-earmark-slides',
+      'pptx': 'bi bi-file-earmark-slides',
+      'jpg': 'bi bi-file-earmark-image',
+      'jpeg': 'bi bi-file-earmark-image',
+      'png': 'bi bi-file-earmark-image',
+      'gif': 'bi bi-file-earmark-image',
+      'svg': 'bi bi-file-earmark-image',
+      'mp3': 'bi bi-file-earmark-music',
+      'mp4': 'bi bi-file-earmark-play',
+      'zip': 'bi bi-file-earmark-zip',
+      'rar': 'bi bi-file-earmark-zip',
+      'txt': 'bi bi-file-earmark-text',
+      'html': 'bi bi-file-earmark-code',
+      'css': 'bi bi-file-earmark-code',
+      'js': 'bi bi-file-earmark-code'
+    };
+    
+    return iconMap[ext] || 'bi bi-file-earmark';
+  }
+  
+  function clearFiles() {
+    const fileInput = document.getElementById('fileUpload');
+    const fileList = document.getElementById('file-list');
+    const selectedFiles = document.getElementById('selected-files');
+    const totalFileSize = document.getElementById('total-file-size');
+    
+    // Clear the file input
+    fileInput.value = '';
+    
+    // Clear the file list display
+    fileList.innerHTML = '';
+    
+    // Reset the total size display
+    totalFileSize.innerHTML = '<i class="bi bi-hdd me-1"></i>Total: 0 Bytes';
+    
+    // Clear our global array of selected files
+    selectedFilesList = [];
+    
+    // Hide the selected files container
+    selectedFiles.classList.add('d-none');
+    
+    // Hide any error messages
+    document.getElementById('fileSizeError').style.display = 'none';
+  }
+  
+  // Initialize Socket.IO connection
+  let socket;
+  let uploadInProgress = false;
+  let currentFileId = null;
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Socket.IO connection
+    socket = io();
+    
+    // Join user-specific room for progress updates
+    socket.on('connect', function() {
+      socket.emit('join', {
+        user_id: {{ current_user.id }}
+      });
+    });
+    
+    // Listen for upload progress updates
+    socket.on('upload_progress', function(data) {
+      updateProgressBar(data);
+    });
+  });
+  
+  function updateProgressBar(data) {
+    const progressContainer = document.getElementById('upload-progress-container');
+    const progressBar = document.getElementById('upload-progress-bar');
+    const progressPercentage = document.getElementById('progress-percentage');
+    const progressFilename = document.getElementById('progress-filename');
+    const uploadSpeed = document.getElementById('upload-speed');
+    const uploadSize = document.getElementById('upload-size');
+    
+    // Show progress container
+    progressContainer.classList.remove('d-none');
+    
+    // Update progress bar
+    const progress = Math.round(data.progress);
+    progressBar.style.width = progress + '%';
+    progressBar.setAttribute('aria-valuenow', progress);
+    progressPercentage.textContent = progress + '%';
+    
+    // Update filename based on whether it's a single file or multiple files (ZIP)
+    if (data.total_files > 1) {
+      // Multiple files being uploaded as a ZIP
+      if (data.status === 'completed') {
+        progressFilename.textContent = `All ${data.total_files} files uploaded successfully as a ZIP archive!`;
+      } else {
+        progressFilename.textContent = `Uploading ${data.total_files} files as a ZIP archive...`;
+      }
+    } else {
+      // Single file upload
+      if (data.status === 'completed') {
+        progressFilename.textContent = `${data.filename} uploaded successfully!`;
+      } else {
+        progressFilename.textContent = `Uploading ${data.filename}...`;
+      }
+    }
+    
+    // Update speed
+    uploadSpeed.textContent = formatSpeed(data.speed);
+    
+    // Update size
+    uploadSize.textContent = formatFileSize(data.uploaded_size) + ' / ' + formatFileSize(data.total_size);
+    
+    // Handle completion
+    if (data.status === 'completed') {
+      // All uploads complete
+      progressBar.classList.remove('progress-bar-animated');
+      uploadSpeed.textContent = 'Upload complete!';
+      uploadInProgress = false;
+      currentFileId = null;
+    }
+  }
+  
+  function formatSpeed(bytesPerSecond) {
+    if (bytesPerSecond < 1024) {
+      return Math.round(bytesPerSecond) + ' B/s';
+    } else if (bytesPerSecond < 1024 * 1024) {
+      return (bytesPerSecond / 1024).toFixed(1) + ' KB/s';
+    } else {
+      return (bytesPerSecond / (1024 * 1024)).toFixed(1) + ' MB/s';
+    }
+  }
+  
+  // Global variables for file upload queue
+  let fileQueue = [];
+  let currentFileIndex = 0;
+  let totalFiles = 0;
+  let uploadComplete = false;
+  
+  function handleFileScan(event) {
+    event.preventDefault();
+    
+    const uploadBtn = document.getElementById('upload-btn');
+    const spinner = document.getElementById('upload-spinner');
+    const dropZone = document.getElementById('drag-drop-area');
+    const progressContainer = document.getElementById('upload-progress-container');
+    const progressBar = document.getElementById('upload-progress-bar');
+    
+    // Validate files before submission
+    if (!selectedFilesList.length) {
+      return;
+    }
+    
+    // Show loading state
+    uploadBtn.disabled = true;
+    spinner.classList.remove('d-none');
+    document.getElementById('loading-message').style.display = 'block';
+    dropZone.classList.add('uploading');
+    
+    // Reset progress bar
+    progressBar.style.width = '0%';
+    progressBar.setAttribute('aria-valuenow', 0);
+    progressContainer.classList.remove('d-none');
+    
+    // Initialize file queue from our global selected files array
+    fileQueue = [...selectedFilesList];
+    totalFiles = fileQueue.length;
+    currentFileIndex = 0;
+    uploadComplete = false;
+    
+    // Update progress bar with initial message
+    const progressFilename = document.getElementById('progress-filename');
+    if (fileQueue.length > 1) {
+      progressFilename.textContent = `Uploading ${fileQueue.length} files as a ZIP archive...`;
+    } else {
+      progressFilename.textContent = `Uploading ${fileQueue[0].name}...`;
+    }
+    
+    // Start uploading all files at once
+    uploadNextFile();
+  }
+  
+  function uploadNextFile() {
+    if (currentFileIndex >= fileQueue.length) {
+      // All files have been uploaded
+      if (uploadComplete) {
+        // Show final success message
+        Swal.fire({
+          title: 'Upload Successful',
+          text: `All ${totalFiles} files have been uploaded and shared successfully!`,
+          icon: 'success',
+          confirmButtonText: 'OK'
+        }).then((result) => {
+          // After user clicks OK, redirect or reload
+          window.location.reload();
+        });
+        
+        // Clear the selected files after successful upload
+        selectedFilesList = [];
+      }
+      return;
+    }
+    
+    // For multiple files, we'll upload them all at once
+    // This will trigger the server-side ZIP creation logic
+    const fileId = Date.now().toString(); // Generate a unique ID for this upload
+    currentFileId = fileId;
+    uploadInProgress = true;
+    
+    // Create FormData from the form
+    const formData = new FormData(document.querySelector('form'));
+    
+    // Remove any existing files from the FormData
+    if (formData.has('file')) {
+      formData.delete('file');
+    }
+    
+    // Add all files from our selected files array to the FormData
+    // This will send all files at once, triggering the server's ZIP logic
+    for (let i = 0; i < fileQueue.length; i++) {
+      formData.append('file', fileQueue[i]);
+    }
+    
+    // Notify server about upload start
+    socket.emit('upload_start', {
+      user_id: {{ current_user.id }},
+      file_id: fileId,
+      filename: fileQueue.length > 1 ? `${fileQueue.length} files` : fileQueue[0].name,
+      total_size: fileQueue.reduce((total, file) => total + file.size, 0),
+      file_index: 0,
+      total_files: fileQueue.length
+    });
+    
+    // Use XMLHttpRequest for upload with progress tracking
+    const xhr = new XMLHttpRequest();
+    
+    xhr.upload.addEventListener('progress', function(e) {
+      if (e.lengthComputable && uploadInProgress) {
+        const uploadedSize = e.loaded;
+        
+        // Update server about progress
+        socket.emit('upload_progress_update', {
+          user_id: {{ current_user.id }},
+          file_id: fileId,
+          uploaded_size: uploadedSize,
+          file_index: 0,
+          total_files: fileQueue.length
+        });
+      }
+    });
+    
+    xhr.addEventListener('load', function() {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        // Check if the response contains any message
+        const responseHTML = xhr.responseText;
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(responseHTML, 'text/html');
+        const flashMessage = doc.getElementById('flash-message');
+        
+        // Always reset upload UI elements first
+        const uploadBtn = document.getElementById('upload-btn');
+        const spinner = document.getElementById('upload-spinner');
+        const dropZone = document.getElementById('drag-drop-area');
+        const progressContainer = document.getElementById('upload-progress-container');
+        
+        uploadBtn.disabled = false;
+        spinner.classList.add('d-none');
+        document.getElementById('loading-message').style.display = 'none';
+        dropZone.classList.remove('uploading');
+        progressContainer.classList.add('d-none');
+        
+        if (flashMessage && flashMessage.textContent.trim()) {
+          // Any flash message found in the response
+          if (flashMessage.classList.contains('flash-message')) {
+            // Error message found in the response
+            Swal.fire({
+              title: 'Upload Error',
+              text: flashMessage.textContent.trim(),
+              icon: 'error',
+              confirmButtonText: 'OK'
+            }).then(() => {
+              window.location.reload();
+            });
+          } else if (flashMessage.classList.contains('success-message')) {
+            // Success message found
+            Swal.fire({
+              title: 'Success',
+              text: flashMessage.textContent.trim(),
+              icon: 'success',
+              confirmButtonText: 'OK'
+            }).then(() => {
+              window.location.reload();
+            });
+          } else {
+            // Generic message, just reload
+            window.location.reload();
+          }
+          return;
+        }
+
+        socket.emit('upload_complete', {
+          user_id: {{ current_user.id }},
+          file_id: fileId,
+          file_index: 0,
+          total_files: fileQueue.length
+        });
+        
+        // Mark upload as complete
+        uploadComplete = true;
+        currentFileIndex = fileQueue.length;
+        
+        // Show success message
+        Swal.fire({
+          title: 'Upload Successful',
+          text: fileQueue.length > 1 ? 
+            `All ${fileQueue.length} files have been uploaded and shared successfully as a ZIP file!` : 
+            'File has been uploaded and shared successfully!',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        }).then((result) => {
+          // After user clicks OK, redirect or reload
+          window.location.reload();
+        });
+      } else {
+        // Handle error
+        handleUploadError('Upload Error', 'An error occurred during file upload.');
+      }
+    });
+    
+    xhr.addEventListener('error', function() {
+      // Handle network error
+      handleUploadError('Network Error', 'A network error occurred during file upload.');
+    });
+    
+    // Open and send the request
+    xhr.open('POST', '{{ url_for("fileshare") }}', true);
+    xhr.send(formData);
+  }
+  
+  function handleUploadError(title, message) {
+    const uploadBtn = document.getElementById('upload-btn');
+    const spinner = document.getElementById('upload-spinner');
+    const dropZone = document.getElementById('drag-drop-area');
+    
+    uploadBtn.disabled = false;
+    spinner.classList.add('d-none');
+    document.getElementById('loading-message').style.display = 'none';
+    dropZone.classList.remove('uploading');
+    
+    Swal.fire({
+      title: title,
+      text: message,
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+    
+    uploadInProgress = false;
+    currentFileId = null;
+  }
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.download-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const icon = this.querySelector('.bi-download');
+      const spinner = this.querySelector('.spinner-border');
+      
+      icon.classList.add('d-none');
+      spinner.classList.remove('d-none');
+      
+      this.classList.add('disabled');
+      
+      setTimeout(() => {
+        icon.classList.remove('d-none');
+        spinner.classList.add('d-none');
+        this.classList.remove('disabled');
+      }, 5000);
+
+    });
+  });
+});
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const dateElements = document.querySelectorAll('td span.badge.bg-warning span');
+    dateElements.forEach(element => {
+      if (element.textContent.trim()) {
+        const date = new Date(element.textContent.trim());
+        if (!isNaN(date.getTime())) {
+          const formattedDate = date.toLocaleDateString('en-US', {
+            weekday: 'short',
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          });
+          const formattedTime = date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+          });
+          // Create a more structured date display with line breaks
+          element.innerHTML = `<div style="font-weight: 600">${formattedDate}</div><div>${formattedTime}</div>`;
+        }
+      }
+    });
+  });
+</script>
+
+<!-- Initialize Select2 for recipient dropdown -->
+<script>
+  $(document).ready(function() {
+    $('#recipient').select2({
+      placeholder: 'Select recipients',
+      allowClear: true,
+      width: '100%',
+      closeOnSelect: false,
+      templateResult: formatUser,
+      templateSelection: formatUserSelection
+    });
+    
+    function formatUser(user) {
+      if (!user.id) return user.text;
+      
+      // Extract username from the option text
+      const username = user.text.match(/\(([^)]+)\)/)[1];
+      
+      // Get user ID from data attribute
+      const userId = $(user.element).data('user-id');
+      
+      // Create a more visually appealing user item with profile picture
+      const $result = $(`
+        <div class="select2-user-result d-flex align-items-center">
+          <div class="user-avatar me-2">
+            <img src="/profile_picture/${userId}" class="rounded-circle" width="32" height="32" alt="${username}">
+          </div>
+          <div class="user-info">
+            <div class="user-name">${user.text.split('(')[0].trim()}</div>
+            <div class="user-username text-muted small">@${username}</div>
+          </div>
+        </div>
+      `);
+      
+      // Handle image error by replacing with default icon
+      $result.find('img').on('error', function() {
+        $(this).replaceWith('<i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>');
+      });
+      
+      return $result;
+    }
+    
+    function formatUserSelection(user) {
+      if (!user.id) return user.text;
+      
+      // Extract username for the selected item
+      const username = user.text.match(/\(([^)]+)\)/)[1];
+      return `${user.text.split('(')[0].trim()} (@${username})`;
+    }
+  });
+</script>
+
+<!-- Add custom styles for Select2 dropdown -->
+<style>
+  /* Container styling */
+  .select2-container--default .select2-selection--multiple {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    min-height: 42px;
+    padding: 0.25rem 0.5rem;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+  }
+  
+  .select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: #4dabf7;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    background-color: #fff;
+  }
+  
+  /* Dropdown styling */
+  .select2-dropdown {
+    border-radius: 0.5rem;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+  }
+  
+  .select2-search--dropdown {
+    padding: 10px;
+  }
+  
+  .select2-search--dropdown .select2-search__field {
+    border-radius: 0.375rem;
+    border: 1px solid #ced4da;
+    padding: 8px 12px;
+    transition: all 0.3s ease;
+  }
+  
+  .select2-search--dropdown .select2-search__field:focus {
+    border-color: #4dabf7;
+    outline: none;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+  
+  /* Selected items styling */
+  .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #4dabf7;
+    background-image: linear-gradient(to right, #4dabf7, #3b8ef3);
+    border: none;
+    color: white;
+    border-radius: 50rem;
+    padding: 0.3rem 0.75rem;
+    margin-right: 0.5rem;
+    margin-top: 0.3rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+  }
+  
+  .select2-container--default .select2-selection--multiple .select2-selection__choice:hover {
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+  }
+  
+  .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: rgba(255, 255, 255, 0.8);
+    margin-right: 0.5rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    padding-right: 0.5rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+  
+  .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    color: #fff;
+    background-color: transparent;
+  }
+  
+  /* User item styling in dropdown */
+  .select2-user-result {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    transition: all 0.2s ease;
+    border-radius: 0.375rem;
+  }
+  
+  .select2-user-result:hover {
+    background-color: #f1f3f5;
+  }
+  
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    color: #4dabf7;
+    font-size: 1.2rem;
+  }
+  
+  .user-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .user-name {
+    font-weight: 600;
+    color: #343a40;
+    font-size: 0.95rem;
+  }
+  
+  .user-username {
+    font-size: 0.8rem;
+    color: #6c757d;
+  }
+  
+  /* Placeholder styling */
+  .select2-container--default .select2-selection--multiple .select2-selection__placeholder {
+    color: #6c757d;
+    font-style: italic;
+  }
+  
+  /* Results list styling */
+  .select2-results__option {
+    padding: 4px 8px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #e9ecef;
+    color: #212529;
+  }
+  
+  .select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: #e7f5ff;
+  }
+</style>
+
+</html>

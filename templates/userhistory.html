@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Userhistory</title>
+
+  <!-- Favicons -->
+  <link href="{{ url_for('static', filename='img/logo.png') }}" rel="icon">
+  <link href="{{ url_for('static', filename='img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{{ url_for('static', filename='vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/quill/quill.snow.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/quill/quill.bubble.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/remixicon/remixicon.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/simple-datatables/style.css') }}" rel="stylesheet">
+
+  <!-- Bootstrap -->
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='vendor/bootstrap-icons/font/bootstrap-icons.css') }}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+  <!-- Custom Styles -->
+  <style>
+    /* Improved Mobile Table Styles */
+    @media (max-width: 767px) {
+      /* Make tables responsive */
+      .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+  
+      /* Table row styling for mobile */
+      #recordsTable tbody tr,
+      #queryHistoryTable tbody tr {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+      }
+  
+      /* Table cell styling for mobile */
+      #recordsTable tbody td,
+      #queryHistoryTable tbody td {
+        display: flex;
+        justify-content: space-between;
+        text-align: right;
+        padding: 12px 15px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+  
+      /* Remove border from last cell */
+      #recordsTable tbody td:last-child,
+      #queryHistoryTable tbody td:last-child {
+        border-bottom: none;
+      }
+  
+      /* Add data labels */
+      #recordsTable tbody td::before,
+      #queryHistoryTable tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        text-align: left;
+        color: var(--primary-dark);
+        margin-right: 15px;
+        flex: 1;
+      }
+  
+      /* Center action buttons */
+      #recordsTable tbody td:last-child,
+      #queryHistoryTable tbody td:last-child {
+        justify-content: center;
+      }
+  
+      /* Hide table headers on mobile */
+      #recordsTable thead,
+      #queryHistoryTable thead {
+        display: none;
+      }
+  
+      /* Add data labels to each cell */
+      #recordsTable tbody td:nth-child(1)::before { content: "File Name"; }
+      #recordsTable tbody td:nth-child(2)::before { content: "Receiver"; }
+      #recordsTable tbody td:nth-child(3)::before { content: "Time & Date"; }
+      #recordsTable tbody td:nth-child(4)::before { content: "Type"; }
+      #recordsTable tbody td:nth-child(5)::before { content: "Size (MB)"; }
+      #recordsTable tbody td:nth-child(6)::before { content: "User Queries"; }
+      #recordsTable tbody td:nth-child(7)::before { content: "Actions"; }
+  
+      #queryHistoryTable tbody td:nth-child(1)::before { content: "Query ID"; }
+      #queryHistoryTable tbody td:nth-child(2)::before { content: "Subject"; }
+      #queryHistoryTable tbody td:nth-child(3)::before { content: "Description"; }
+      #queryHistoryTable tbody td:nth-child(4)::before { content: "Status"; }
+      #queryHistoryTable tbody td:nth-child(5)::before { content: "Submitted Date"; }
+  
+      /* Style for action buttons */
+      .btn-sm {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  {% include 'base_nav.html' %}
+
+  <!-- ======= Main Content ======= -->
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h2>Activity History</h2>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="UserDashboard">Home</a></li>
+          <li class="breadcrumb-item active">History</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-body">
+              <!-- Nav tabs -->
+              <ul class="nav nav-tabs nav-tabs-bordered mb-3" id="historyTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="files-tab" data-bs-toggle="tab" data-bs-target="#files" type="button" role="tab" aria-controls="files" aria-selected="true">
+                    <i class="bi bi-file-earmark me-1"></i> Files History
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="queries-tab" data-bs-toggle="tab" data-bs-target="#queries" type="button" role="tab" aria-controls="queries" aria-selected="false">
+                    <i class="bi bi-question-circle me-1"></i> Query History
+                  </button>
+                </li>
+              </ul>
+
+              <!-- Tab content -->
+              <div class="tab-content" id="historyTabContent">
+                <!-- Files Tab -->
+                <div class="tab-pane fade show active" id="files" role="tabpanel" aria-labelledby="files-tab">
+                  <h5 class="card-title">Uploaded & Sent Files</h5>
+                  
+                  <!-- Search Input for Files Table -->
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="fileSearchInput" placeholder="Search files...">
+                      </div>
+                    </div>
+                  </div>
+          
+                  <!-- Records Table -->
+                  <div class="table-responsive">
+                    <table class="table table-hover table-striped" id="recordsTable">
+                      <thead class="table-light">
+                        <tr>
+                          <th scope="col">File Name</th>
+                          <th scope="col">Receiver</th>
+                          <th scope="col">Time & Date</th>
+                          <th scope="col">Type</th>
+                          <th scope="col">Size (MB)</th>
+                          <th scope="col">User Queries</th>
+                          <th scope="col">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody id="fileTableBody">
+                        {% for file in sent_files %}
+                        <tr>
+                          <td data-label="File Name">{{ file.filename }}</td>
+                          <td data-label="Receiver">{{ file.shared_with or 'N/A' }}</td>
+                          <td data-label="Time & Date">{{ file.created_at }}</td>
+                          <td data-label="Type">
+                            {% set filetype = file.filename.split('.')[-1]|lower %}
+                            {% if filetype in ['pdf'] %}
+                              <span class="badge bg-danger">{{ filetype }}</span>
+                            {% elif filetype in ['doc', 'docx', 'apk'] %}
+                              <span class="badge bg-primary">{{ filetype }}</span>
+                            {% elif filetype in ['xls', 'xlsx', 'csv'] %}
+                              <span class="badge bg-success">{{ filetype }}</span>
+                            {% elif filetype in ['jpg', 'jpeg', 'png', 'gif', 'mp4'] %}
+                              <span class="badge bg-info">{{ filetype }}</span>
+                            {% elif filetype in ['zip', 'rar', 'tar', 'gz'] %}
+                              <span class="badge bg-secondary">{{ filetype }}</span>
+                            {% elif filetype in ['txt', 'md'] %}
+                              <span class="badge bg-light text-dark">{{ filetype }}</span>
+                            {% elif filetype in ['ppt', 'pptx'] %}
+                              <span class="badge bg-warning text-dark">{{ filetype }}</span>
+                            {% else %}
+                              <span class="badge bg-dark">{{ filetype }}</span>
+                            {% endif %}
+                          </td>
+                          <td data-label="Size (MB)">{{ file.size or 'N/A' }} MB</td>
+                          <td data-label="User Queries">{{ file.user_queries or 'N/A' }}</td>
+                          <td data-label="Actions">
+                            <form action="{{ url_for('delete_file', file_id=file.id) }}" method="POST">
+                              <button type="submit" class="btn btn-sm" style="background-color: red; color: white; font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                                <i class="bi bi-trash"></i> Delete
+                              </button>                              
+                            </form>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  <!-- Files Pagination -->
+                  <div class="row mt-3">
+                    <div class="col-md-6">
+                      <span id="fileTableInfo">Showing <span id="fileDisplayCount">1</span> to <span id="fileTotalCount">{{ sent_files|length }}</span> of {{ sent_files|length }} files</span>
+                    </div>
+                    <div class="col-md-6">
+                      <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-end" id="fileTablePagination">
+                          <li class="page-item disabled" id="filePrevPage">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                          </li>
+                          <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                          <li class="page-item" id="fileNextPage">
+                            <a class="page-link" href="#">Next</a>
+                          </li>
+                        </ul>
+                      </nav>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Queries Tab -->
+                <div class="tab-pane fade" id="queries" role="tabpanel" aria-labelledby="queries-tab">
+                  <h5 class="card-title">User Query History</h5>
+                  
+                  <!-- Search Input for Query Table -->
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="querySearchInput" placeholder="Search queries...">
+                      </div>
+                    </div>
+                  </div>
+          
+                  <!-- Query History Table -->
+                  <div class="table-responsive">
+                    <table class="table table-hover table-striped" id="queryHistoryTable">
+                      <thead class="table-light">
+                        <tr>
+                          <th scope="col">Query ID</th>
+                          <th scope="col">Subject</th>
+                          <th scope="col">Description</th>
+                          <th scope="col">Screenshot</th>
+                          <th scope="col">Status</th>
+                          <th scope="col">Submitted Date</th>
+                        </tr>
+                      </thead>
+                      <tbody id="queryTableBody">
+                        {% if inquiries %}
+                          {% for inquiry in inquiries %}
+                            <tr>
+                              <td>{{ inquiry.id }}</td>
+                              <td>{{ inquiry.subject }}</td>
+                              <td>{{ inquiry.description }}</td>
+                              <td>
+                                {% if inquiry.screenshot %}
+                                  <button type="button" class="btn btn-sm btn-info view-screenshot" data-bs-toggle="modal" data-bs-target="#screenshotModal" data-screenshot="{{ url_for('view_inquiry_screenshot', inquiry_id=inquiry.id) }}">
+                                    <i class="bi bi-image"></i> View
+                                  </button>
+                                {% else %}
+                                  <span class="text-muted">No screenshot</span>
+                                {% endif %}
+                              </td>
+                              <td>
+                                {% if inquiry.status == 'Resolved' %}
+                                  <span class="badge bg-success"><i class="bi bi-check2-circle"></i> Resolved</span>
+                                {% else %}
+                                  <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Pending</span>
+                                {% endif %}
+                              </td>
+                              <td>{{ inquiry.created_at }}</td>
+                            </tr>
+                          {% endfor %}
+                        {% else %}
+                          <tr>
+                            <td colspan="5" class="text-center">No inquiries found.</td>
+                          </tr>
+                        {% endif %}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  <!-- Queries Pagination -->
+                  <div class="row mt-3">
+                    <div class="col-md-6">
+                      <span id="queryTableInfo">Showing <span id="queryDisplayCount">1</span> to <span id="queryTotalCount">{{ inquiries|length }}</span> of {{ inquiries|length }} queries</span>
+                    </div>
+                    <div class="col-md-6">
+                      <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-end" id="queryTablePagination">
+                          <li class="page-item disabled" id="queryPrevPage">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                          </li>
+                          <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                          <li class="page-item" id="queryNextPage">
+                            <a class="page-link" href="#">Next</a>
+                          </li>
+                        </ul>
+                      </nav>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- End #main -->
+
+  <!-- Screenshot Modal -->  
+<div class="modal fade" id="screenshotModal" tabindex="-1" aria-labelledby="screenshotModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="screenshotModalLabel">Screenshot</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="screenshotImage" src="" class="img-fluid" alt="Screenshot" style="max-height: 80vh;">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>FilSha</span></strong>. All Rights Reserved
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/simple-datatables/simple-datatables.js') }}"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/user/userhistory.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Admin - Dashboard - FilSha</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+<!--Facivons-->
+<link href="{{ url_for('static', filename='img/iconlogo2.png') }}" rel="icon">
+ 
+<!-- Google Fonts -->
+<link href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+<link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/quill/quill.snow.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/quill/quill.bubble.css') }}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+
+  <!-- Template Main CSS File -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+</head>
+<body>
+
+    <header id="header" class="header fixed-top d-flex align-items-center">
+    <div class="d-flex align-items-center">
+       <i class="bi bi-list toggle-sidebar-btn me-3" onclick="toggleSidebar()"></i>
+      <a href="{{ url_for('admin_dashboard') }}" class="logo d-flex align-items-center">
+        <img src="{{ url_for('static', filename='img/internet.png') }}" alt="" class="me-2" style="height: 32px;">
+        <span class="d-none d-lg-block" style="font-size: 1.2rem;">FilSha</span>
+     </a>
+    </div><!-- End Logo -->
+
+      <nav class="header-nav ms-auto">
+        <ul class="d-flex align-items-center">
+  
+          <li class="nav-item d-block d-lg-none">
+            <a class="nav-link nav-icon search-bar-toggle " href="#">
+              <i class="bi bi-search"></i>
+            </a>
+          </li><!-- End Search Icon-->
+  
+          <li class="nav-item dropdown">
+  
+            <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+              <i class="bi bi-bell"></i>
+              <span class="badge bg-primary badge-number inquiry-count">{{ unread_inquiry_count }}</span>
+            </a><!-- End Notification Icon -->
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+              <li class="dropdown-header">
+                <span id="notification-header">You have {{ unread_inquiry_count }} new inquiries</span>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#inquiryNotificationsModal"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              
+              <div id="notification-items">
+                <!-- Notification items will be loaded here via JavaScript -->
+              </div>
+
+              <li class="dropdown-footer">
+                <a href="#" id="mark-all-read">Mark all as read</a>
+              </li>
+  
+            </ul><!-- End Notification Dropdown Items -->
+  
+          </li><!-- End Notification Nav -->
+          <li class="nav-item dropdown">
+
+            <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+              <i class="bi bi-chat-left-text"></i>
+              <span class="badge bg-success badge-number">2</span>
+            </a><!-- End Messages Icon -->
+  
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+              <li class="dropdown-header">
+                You have 2 new messages
+                <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li class="message-item">
+                <a href="#">
+                  <img src="assets/img/messages-1.jpg" alt="" class="rounded-circle">
+                  <div>
+                    <h4>Maria Hudson</h4>
+                    <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                    <p>4 hrs. ago</p>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li class="message-item">
+                <a href="#">
+                  <img src="assets/img/messages-2.jpg" alt="" class="rounded-circle">
+                  <div>
+                    <h4>Anna Nelson</h4>
+                    <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                    <p>6 hrs. ago</p>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li class="dropdown-footer">
+                <a href="#">Show all messages</a>
+              </li>
+  
+            </ul><!-- End Messages Dropdown Items -->
+  
+          </li><!-- End Messages Nav -->
+          
+          <li class="nav-item dropdown pe-3">
+            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+              <img src="{{ url_for('static', filename='img/admin_pic.png') }}" alt="Profile" class="circle">
+              <span class="d-none d-md-block dropdown-toggle ps-2">{{ admin_username }}</span>
+            </a><!-- End Profile Image Icon -->
+
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+              <li class="dropdown-header">
+                <h6>{{ admin_username }}</h6>
+                <span>Admin</span>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                  <i class="bi bi-person"></i>
+                  <span>My Profile</span>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="{{ url_for('admin_logout') }}">
+                  <i class="bi bi-box-arrow-right"></i>
+                  <span>Sign Out</span>
+                </a>
+              </li>
+  
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </header><!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+          <i class="bi bi-grid"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_inquiries') }}">
+          <i class="bi bi-envelope"></i>
+          <span>User's Query</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_add_user') }}">
+          <i class="bi bi-person-plus"></i>
+          <span>Add Users</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_activity_log') }}">
+          <i class="bi bi-person"></i>
+          <span>User's Activity Logs</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_user_list') }}">
+          <i class="bi bi-person-lines-fill"></i>
+          <span>User Management</span>
+        </a>
+      </li>
+     
+
+  </aside><!-- End Sidebar-->
+
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h2>Dashboard</h2>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Home</a></li>
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+  <div class="row">
+    <!--SweetAlert-->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+              title: '{{ category|title }}',
+              text: '{{ message }}',
+              icon: '{{ "error" if category == "danger" else "success" }}',
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: true,
+            });
+          });
+        </script>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+    
+    <!-- Cards Container -->
+<div class="row g-4">
+  <!-- Total Uploaded Files Size Card -->
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="card info-card h-100 shadow-sm">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center">
+          <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-primary-light me-3">
+            <i class="bi bi-file-earmark text-primary fs-4"></i>
+          </div>
+          <div>
+            <h5 class="card-title fw-bold mb-0">Total Files</h5>
+            <p class="text-muted small mb-1">All user files</p>
+          </div>
+        </div>
+        <div class="mt-3 text-center">
+          <h3 class="fw-bold">{{ total_uploaded_gb|round(2) }} GB</h3>
+          <div class="mb-2">
+          <span class="badge bg-success">
+              <i class="bi bi-file-earmark-arrow-up"></i> {{ file_uploads_count }}
+            </span>
+            
+            <span class="badge bg-success">
+              <i class="bi bi-file-earmark-arrow-down"></i> {{ file_downloads_count }}
+            </span>          
+          </div>
+          <button class="btn btn-sm btn-outline-primary mt-1" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;" 
+                  data-bs-toggle="modal" data-bs-target="#fileBreakdownModal">
+            <i class="bi bi-eye me-1"></i> View Breakdown
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Users Card -->
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="card info-card h-100 shadow-sm">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center">
+          <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-success-light me-3">
+            <i class="bi bi-people text-success fs-4"></i>
+          </div>
+          <div>
+            <h5 class="card-title fw-bold mb-0">Total Users</h5>
+            <p class="text-muted small mb-1">Registered accounts</p>
+          </div>
+        </div>
+        <div class="mt-3 text-center">
+          <h3 class="fw-bold">{{ total_users }}</h3>
+          <div class="d-flex justify-content-center align-items-center mb-2">
+            <span class="badge bg-success me-2">{{ active_users }} Online</span>
+            <span class="badge bg-secondary">{{ total_users - active_users }} Offline</span>
+          </div>
+          <button class="btn btn-sm btn-outline-primary mt-1" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;" 
+                  data-bs-toggle="modal" data-bs-target="#userBreakdownModal">
+            <i class="bi bi-eye me-1"></i> View Breakdown
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+        <div class="modal fade" id="userBreakdownModal" tabindex="-1" aria-labelledby="userBreakdownModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="userBreakdownModalLabel">User Breakdown</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="d-flex align-items-center mt-2">
+                  <i class="bi bi-circle-fill text-success me-2" style="font-size: 0.7rem;"></i>
+                  <span>Online Users: <strong>{{ active_users }}</strong></span>
+                </div>
+                <div class="d-flex align-items-center mt-2">
+                  <i class="bi bi-circle-fill text-secondary me-2" style="font-size: 0.7rem;"></i>
+                  <span>Offline Users: <strong>{{ total_users - active_users }}</strong></span>
+                </div>
+                <hr>
+                <div class="d-flex align-items-center mt-2">
+                  <i class="bi bi-person-fill text-primary me-2"></i>
+                  <span>Barangay Captains: <strong>{{ total_brgycaptain }}</strong></span>
+                </div>
+                <div class="d-flex align-items-center mt-2">
+                  <i class="bi bi-briefcase-fill text-success me-2"></i>
+                  <span>Employees: <strong>{{ total_employee }}</strong></span>
+                </div>
+                <div class="d-flex align-items-center mt-2">
+                  <i class="bi bi-award-fill text-warning me-2"></i>
+                  <span>Government Positions: <strong>{{ total_government_position }}</strong></span>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+<!-- Threats Detected Card -->
+<div class="col-12 col-md-6 col-lg-4">
+  <div class="card info-card h-100 shadow-sm">
+    <div class="card-body p-4">
+      <div class="d-flex align-items-center">
+        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-danger-light me-3">
+          <i class="bi bi-shield-exclamation text-danger fs-4"></i>
+        </div>
+        <div>
+          <h5 class="card-title fw-bold mb-0">Threats Detected</h5>
+          <p class="text-muted small mb-1">Security issues found</p>
+        </div>
+      </div>
+      <div class="mt-3 text-center">
+        <h3 class="fw-bold">{{ get_all_threats()|length }}</h3>
+        {% set threat_stats = get_threat_statistics() %}
+        <div class="mb-2">
+          <span class="badge bg-danger">{{ threat_stats.hash_threats }} Files</span>
+          <span class="badge bg-warning text-dark">{{ threat_stats.sql_injection_threats + threat_stats.xss_threats }} Injections</span>
+          <span class="badge bg-info">{{ threat_stats.suspicious_ip_threats }} IPs</span>
+        </div>
+        <button class="btn btn-sm btn-outline-danger mt-1" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;" 
+                data-bs-toggle="modal" data-bs-target="#adminThreatsModal">
+          <i class="bi bi-eye me-1"></i> View Details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- File Breakdown Modal -->
+<div class="modal fade" id="fileBreakdownModal" tabindex="-1" aria-labelledby="fileBreakdownModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="fileBreakdownModalLabel">User File Statistics</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Files</th>
+                <th>Size (GB)</th>
+                <th>Shared</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in user_upload_stats %}
+              <tr>
+                <td>{{ user.full_name }}</td>
+                <td>{{ user.uploaded_files_count }}</td>
+                <td>{{ user.total_uploaded_gb }}</td>
+                <td>{{ user.shared_files_count }}</td>
+                <td>
+                  <button class="btn btn-sm btn-primary view-details" data-user-id="{{ user.id }}">
+                    <i class="bi bi-list-ul"></i> Details
+                  </button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- User File Details Modal -->
+<div class="modal fade" id="userFileDetailsModal" tabindex="-1" aria-labelledby="userFileDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="userFileDetailsModalLabel">User File Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="userFileDetailsContent">
+          <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading user file details...</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Threats Modal -->
+<div class="modal fade" id="adminThreatsModal" tabindex="-1" aria-labelledby="adminThreatsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="adminThreatsModalLabel">All Detected Threats</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Threat Statistics Summary -->
+        <div class="row mb-4">
+          {% set threat_stats = get_threat_statistics() %}
+          <div class="col-md-3 text-center">
+            <div class="border rounded p-2 h-100">
+              <h6 class="mb-1">Malicious Files</h6>
+              <h3 class="text-danger mb-0">{{ threat_stats.hash_threats }}</h3>
+            </div>
+          </div>
+          <div class="col-md-3 text-center">
+            <div class="border rounded p-2 h-100">
+              <h6 class="mb-1">SQL Injection</h6>
+              <h3 class="text-warning mb-0">{{ threat_stats.sql_injection_threats }}</h3>
+            </div>
+          </div>
+          <div class="col-md-3 text-center">
+            <div class="border rounded p-2 h-100">
+              <h6 class="mb-1">XSS Attacks</h6>
+              <h3 class="text-warning mb-0">{{ threat_stats.xss_threats }}</h3>
+            </div>
+          </div>
+          <div class="col-md-3 text-center">
+            <div class="border rounded p-2 h-100">
+              <h6 class="mb-1">Suspicious IPs</h6>
+              <h3 class="text-info mb-0">{{ threat_stats.suspicious_ip_threats }}</h3>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-sm btn-outline-primary active" data-filter="all">All Threats</button>
+            <button type="button" class="btn btn-sm btn-outline-primary" data-filter="HASH">File Hash</button>
+            <button type="button" class="btn btn-sm btn-outline-primary" data-filter="SQL_INJECTION">SQL Injection</button>
+            <button type="button" class="btn btn-sm btn-outline-primary" data-filter="XSS">XSS Attacks</button>
+            <button type="button" class="btn btn-sm btn-outline-primary" data-filter="SUSPICIOUS_IP">Suspicious IP</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped" id="threatsTable">
+            <thead>
+                <tr>
+                    <th>Threat Type</th>
+                    <th>Details</th>
+                    <th>User</th>
+                    <th>IP Address</th>
+                    <th>Path</th>
+                    <th>Detected At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for threat in get_all_threats() %}
+                <tr data-threat-type="{{ threat.threat_type }}">
+                    <td>
+                      {% if threat.threat_type == 'HASH' %}
+                        <span class="badge bg-danger">Malicious File</span>
+                      {% elif threat.threat_type == 'SQL_INJECTION' %}
+                        <span class="badge bg-warning text-dark">SQL Injection</span>
+                      {% elif threat.threat_type == 'XSS' %}
+                        <span class="badge bg-warning text-dark">XSS Attack</span>
+                      {% elif threat.threat_type == 'SUSPICIOUS_IP' %}
+                        <span class="badge bg-info">Suspicious IP</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if threat.threat_type == 'HASH' %}
+                        <strong>{{ threat.file_name }}</strong><br>
+                        <small>{{ threat.hash_type }}: <code>{{ threat.file_hash }}</code></small>
+                      {% elif threat.threat_type == 'SQL_INJECTION' or threat.threat_type == 'XSS' %}
+                        <code class="text-danger">{{ threat.payload }}</code>
+                      {% elif threat.threat_type == 'SUSPICIOUS_IP' %}
+                        <span>Multiple failed login attempts</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ threat.owner_username }}</td>
+                    <td>{{ threat.ip_address or 'N/A' }}</td>
+                    <td>{{ threat.request_path or 'N/A' }}</td>
+                    <td>{{ threat.detected_at }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center">No threats detected</td>
+                </tr>
+                {% endfor %}
+                <!-- No results row that will be shown/hidden by JavaScript -->
+                <tr class="no-results" style="display: none;">
+                    <td colspan="6" class="text-center">No threats match the selected filter</td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- System Monitoring Dashboard -->
+<div class="row mt-4">
+  <!-- System Statistics Combined Card -->
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="card-title mb-0">System Performance Monitor</h5>
+          <div>
+            <button class="btn btn-sm btn-outline-primary" id="refreshSystemStats">
+              <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+          </div>
+        </div>
+        
+        <!-- System Stats Summary -->
+        <div class="row mb-3">
+          <div class="col-md-3 text-center">
+            <div class="border rounded p-2 h-100">
+              <h6 class="mb-1">CPU</h6>
+              <h3 class="text-primary mb-0"><span id="combinedCpuPercent">0</span>%</h3>
+              <small class="text-muted"><span id="combinedCpuCores">0</span>C/<span id="combinedCpuThreads">0</span>T</small>
+            </div>
+          </div>
+          <div class="col-md-3 text-center">
+            <div class="border rounded p-2 h-100">
+              <h6 class="mb-1">Memory</h6>
+              <h3 class="text-purple mb-0"><span id="combinedRamPercent">0</span>%</h3>
+              <small class="text-muted"><span id="combinedRamUsed">0</span>/<span id="combinedRamTotal">0</span> GB</small>
+            </div>
+          </div>
+          <div class="col-md-3 text-center">
+            <div class="border rounded p-2 h-100">
+              <h6 class="mb-1">Disk</h6>
+              <h3 class="text-success mb-0"><span id="combinedDiskPercent">0</span>%</h3>
+              <small class="text-muted"><span id="combinedDiskUsed">0</span>/<span id="combinedDiskTotal">0</span> GB</small>
+            </div>
+          </div>
+          <div class="col-md-3 text-center">
+            <div class="border rounded p-2 h-100">
+              <h6 class="mb-1">Network</h6>
+              <h3 class="text-info mb-0"><span id="combinedNetTotal">0</span> KB/s</h3>
+              <small class="text-muted">↑<span id="combinedNetSent">0</span> ↓<span id="combinedNetRecv">0</span></small>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Combined Chart -->
+        <div id="combinedSystemChart" style="height: 300px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      </div>
+    </div><!-- End Left side columns -->
+</section>
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>FilSha</span></strong>. All Rights Reserved
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Inquiry Notifications Modal -->
+  <div class="modal fade" id="inquiryNotificationsModal" tabindex="-1" aria-labelledby="inquiryNotificationsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="inquiryNotificationsModalLabel">User Inquiries</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <input type="text" class="form-control" id="inquirySearchInput" placeholder="Search inquiries...">
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered" id="inquiryNotificationsTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>User</th>
+                  <th>Subject</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="inquiryNotificationsTableBody">
+                <!-- Inquiry notifications will be loaded here via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="markAllInquiriesAsRead">Mark All as Read</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='vendor/apexcharts/apexcharts.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/chart.js/chart.umd.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/echarts/echarts.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/quill/quill.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/simple-datatables/simple-datatables.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/tinymce/tinymce.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/php-email-form/validate.js') }}"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Template Main JS File -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+<!-- Inquiry Notifications JavaScript -->
+<script>
+  $(document).ready(function() {
+    // Function to load inquiry notifications
+    function loadInquiryNotifications() {
+      $.ajax({
+        url: '/admin/get_inquiry_notifications',
+        type: 'GET',
+        success: function(response) {
+          // Update notification count
+          $('.inquiry-count').text(response.unread_count);
+          $('#notification-header').text('You have ' + response.unread_count + ' new inquiries');
+          
+          // Clear existing notifications
+          $('#notification-items').empty();
+          $('#inquiryNotificationsTableBody').empty();
+          
+          // Add notifications to dropdown
+          let notificationItems = '';
+          $.each(response.inquiries.slice(0, 5), function(index, inquiry) {
+            const isRead = inquiry.is_read ? '' : 'unread-notification';
+            notificationItems += `
+              <li class="notification-item ${isRead}">
+                <i class="bi bi-question-circle text-info"></i>
+                <div>
+                  <h4>${inquiry.subject}</h4>
+                  <p>From: ${inquiry.username}</p>
+                  <p>${new Date(inquiry.created_at).toLocaleString()}</p>
+                </div>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+            `;
+          });
+          $('#notification-items').html(notificationItems);
+          
+          // Add all notifications to modal table
+          let tableRows = '';
+          $.each(response.inquiries, function(index, inquiry) {
+            const isRead = inquiry.is_read ? '' : 'table-warning';
+            const formattedDate = new Date(inquiry.created_at).toLocaleString();
+            tableRows += `
+              <tr class="${isRead}" data-inquiry-id="${inquiry.id}">
+                <td>${inquiry.id}</td>
+                <td>${inquiry.username}</td>
+                <td>${inquiry.subject}</td>
+                <td>${inquiry.description}</td>
+                <td>${inquiry.status}</td>
+                <td>${formattedDate}</td>
+                <td>
+                  <button class="btn btn-sm btn-success resolve-inquiry" data-inquiry-id="${inquiry.id}">Resolve</button>
+                  <button class="btn btn-sm btn-danger delete-inquiry" data-inquiry-id="${inquiry.id}">Delete</button>
+                </td>
+              </tr>
+            `;
+          });
+          $('#inquiryNotificationsTableBody').html(tableRows);
+        },
+        error: function(error) {
+          console.error('Error loading inquiry notifications:', error);
+        }
+      });
+    }
+    
+    // Load notifications on page load
+    loadInquiryNotifications();
+    
+    // Refresh notifications every 30 seconds
+    setInterval(loadInquiryNotifications, 30000);
+    
+    // Mark inquiry as read when clicked
+    $(document).on('click', '#inquiryNotificationsTableBody tr', function() {
+      const inquiryId = $(this).data('inquiry-id');
+      $.ajax({
+        url: '/admin/mark_inquiry_as_read/' + inquiryId,
+        type: 'POST',
+        success: function() {
+          loadInquiryNotifications();
+        }
+      });
+    });
+    
+    // Mark all inquiries as read
+    $('#mark-all-read, #markAllInquiriesAsRead').click(function(e) {
+      e.preventDefault();
+      $.ajax({
+        url: '/admin/mark_all_inquiries_as_read',
+        type: 'POST',
+        success: function() {
+          loadInquiryNotifications();
+        }
+      });
+    });
+    
+    // Search functionality
+    $('#inquirySearchInput').on('keyup', function() {
+      const value = $(this).val().toLowerCase();
+      $('#inquiryNotificationsTableBody tr').filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+      });
+    });
+    
+    // Resolve inquiry
+    $(document).on('click', '.resolve-inquiry', function(e) {
+      e.stopPropagation();
+      const inquiryId = $(this).data('inquiry-id');
+      $.ajax({
+        url: '/admin/resolve_inquiry/' + inquiryId,
+        type: 'POST',
+        success: function() {
+          loadInquiryNotifications();
+        }
+      });
+    });
+    
+    // Delete inquiry
+    $(document).on('click', '.delete-inquiry', function(e) {
+      e.stopPropagation();
+      const inquiryId = $(this).data('inquiry-id');
+      if (confirm('Are you sure you want to delete this inquiry?')) {
+        $.ajax({
+          url: '/admin/delete_inquiry/' + inquiryId,
+          type: 'POST',
+          success: function() {
+            loadInquiryNotifications();
+          }
+        });
+      }
+    });
+  });
+</script>
+
+<!-- User File Statistics JS -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Handle view details button clicks
+    const viewDetailsButtons = document.querySelectorAll('.view-details');
+    viewDetailsButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const userId = this.getAttribute('data-user-id');
+        showUserFileDetails(userId);
+      });
+    });
+
+    // Function to toggle sidebar
+    function toggleSidebar() {
+      document.body.classList.toggle('toggle-sidebar');
+    }
+
+    // Initialize dropdowns
+    var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+    var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+      return new bootstrap.Dropdown(dropdownToggleEl)
+    })
+  });
+
+  function showUserFileDetails(userId) {
+    // Show the modal with loading indicator
+    const detailsModal = new bootstrap.Modal(document.getElementById('userFileDetailsModal'));
+    detailsModal.show();
+    
+    // Fetch user file details
+    fetch(`/admin/user_file_stats/${userId}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch user file details');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Populate the modal with user file details
+        const contentDiv = document.getElementById('userFileDetailsContent');
+        
+        // Create HTML content
+        let html = `
+          <div class="user-info mb-4">
+            <h4>${data.user.full_name}</h4>
+            <p><strong>Username:</strong> ${data.user.username}</p>
+            <p><strong>Email:</strong> ${data.user.email}</p>
+          </div>
+          
+          <div class="stats-summary mb-4">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="card bg-light">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">Total Files</h5>
+                    <p class="card-text fs-4">${data.stats.total_files}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card bg-light">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">Total Size</h5>
+                    <p class="card-text fs-4">${data.stats.total_size_gb} GB</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card bg-light">
+                  <div class="card-body text-center">
+                    <h5 class="card-title">Shared Files</h5>
+                    <p class="card-text fs-4">${data.stats.shared_files}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Add file list if there are files
+        if (data.files && data.files.length > 0) {
+          html += `
+            <h5 class="mb-3">File List</h5>
+            <div class="table-responsive">
+              <table class="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Filename</th>
+                    <th>Size (MB)</th>
+                    <th>Uploaded</th>
+                    <th>Shared</th>
+                  </tr>
+                </thead>
+                <tbody>
+          `;
+          
+          data.files.forEach(file => {
+            const date = new Date(file.created_at);
+            const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+            
+            html += `
+              <tr>
+                <td>${file.filename}</td>
+                <td>${file.size_mb}</td>
+                <td>${formattedDate}</td>
+                <td>${file.shared ? '<span class="badge bg-success">Yes</span>' : '<span class="badge bg-secondary">No</span>'}</td>
+              </tr>
+            `;
+          });
+          
+          html += `
+                </tbody>
+              </table>
+            </div>
+          `;
+        } else {
+          html += `<p class="text-center">No files uploaded by this user.</p>`;
+        }
+        
+        contentDiv.innerHTML = html;
+      })
+      .catch(error => {
+        console.error('Error fetching user file details:', error);
+        document.getElementById('userFileDetailsContent').innerHTML = `
+          <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            Failed to load user file details. Please try again.
+          </div>
+        `;
+      });
+  }
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      // Initialize the combined system chart
+      const combinedSystemChart = echarts.init(document.getElementById('combinedSystemChart'));
+      
+      // Combined System Chart options
+      combinedSystemChart.setOption({
+          grid: {
+              left: '3%',
+              right: '4%',
+              bottom: '3%',
+              top: '8%',
+              containLabel: true
+          },
+          tooltip: {
+              trigger: 'axis',
+              axisPointer: {
+                  type: 'cross',
+                  label: {
+                      backgroundColor: '#6a7985'
+                  }
+              }
+          },
+          legend: {
+              data: ['CPU', 'Memory', 'Disk', 'Network'],
+              top: 0
+          },
+          xAxis: {
+              type: 'category',
+              boundaryGap: false,
+              data: [],
+              axisLabel: {
+                  show: true,
+                  fontSize: 10
+              }
+          },
+          yAxis: [
+              {
+                  type: 'value',
+                  name: 'Percent',
+                  min: 0,
+                  max: 100,
+                  position: 'left',
+                  axisLabel: {
+                      formatter: '{value}%'
+                  }
+              },
+              {
+                  type: 'value',
+                  name: 'Network',
+                  min: 0,
+                  position: 'right',
+                  axisLabel: {
+                      formatter: '{value} KB/s'
+                  }
+              }
+          ],
+          series: [
+              {
+                  name: 'CPU',
+                  type: 'line',
+                  smooth: true,
+                  symbol: 'none',
+                  lineStyle: {
+                      width: 2,
+                      color: '#3a4de9'
+                  },
+                  data: []
+              },
+              {
+                  name: 'Memory',
+                  type: 'line',
+                  smooth: true,
+                  symbol: 'none',
+                  lineStyle: {
+                      width: 2,
+                      color: '#673ab7'
+                  },
+                  data: []
+              },
+              {
+                  name: 'Disk',
+                  type: 'line',
+                  smooth: true,
+                  symbol: 'none',
+                  lineStyle: {
+                      width: 2,
+                      color: '#009688'
+                  },
+                  data: []
+              },
+              {
+                  name: 'Network',
+                  type: 'line',
+                  smooth: true,
+                  symbol: 'none',
+                  yAxisIndex: 1,
+                  lineStyle: {
+                      width: 2,
+                      color: '#2196F3'
+                  },
+                  data: []
+              }
+          ]
+      });
+      
+      // Initialize Socket.IO connection
+      const socket = io.connect('/admin');
+      
+      // Function to update system stats with data from Socket.IO
+      function updateSystemStats(data) {
+          // Update combined card values
+          document.getElementById('combinedCpuPercent').textContent = data.cpu.percent;
+          document.getElementById('combinedCpuCores').textContent = data.cpu.cores;
+          document.getElementById('combinedCpuThreads').textContent = data.cpu.threads;
+          
+          document.getElementById('combinedRamPercent').textContent = data.memory.percent;
+          document.getElementById('combinedRamUsed').textContent = data.memory.used;
+          document.getElementById('combinedRamTotal').textContent = data.memory.total;
+          
+          document.getElementById('combinedDiskPercent').textContent = data.disk.percent;
+          document.getElementById('combinedDiskUsed').textContent = data.disk.used;
+          document.getElementById('combinedDiskTotal').textContent = data.disk.total;
+          
+          const totalNetworkKB = data.network.kb_sent + data.network.kb_recv;
+          document.getElementById('combinedNetTotal').textContent = totalNetworkKB.toFixed(2);
+          document.getElementById('combinedNetSent').textContent = data.network.kb_sent;
+          document.getElementById('combinedNetRecv').textContent = data.network.kb_recv;
+          
+          // Update combined chart
+          combinedSystemChart.setOption({
+              xAxis: { data: data.history.timestamps },
+              series: [
+                  { data: data.history.cpu },
+                  { data: data.history.memory },
+                  { data: data.history.disk },
+                  { data: data.history.network_kb }
+              ]
+          });
+      }
+      
+      // Format bytes to human-readable format
+      function formatBytes(bytes, decimals = 2) {
+          if (bytes === 0) return '0 B';
+          const k = 1024;
+          const dm = decimals < 0 ? 0 : decimals;
+          const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+          const i = Math.floor(Math.log(bytes) / Math.log(k));
+          return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+      }
+      
+      // Socket.IO event listeners
+      socket.on('connect', function() {
+          console.log('Connected to system monitoring socket');
+      });
+      
+      socket.on('system_stats_update', function(data) {
+          updateSystemStats(data);
+      });
+      
+      socket.on('disconnect', function() {
+          console.log('Disconnected from system monitoring socket');
+      });
+      
+      // Initial load - fetch once to populate the UI before Socket.IO updates start
+      fetch('/api/system_stats')
+          .then(response => response.json())
+          .then(data => {
+              updateSystemStats(data.current);
+          })
+          .catch(error => console.error('Error fetching initial system stats:', error));
+      
+      // Manual refresh button
+      document.getElementById('refreshSystemStats').addEventListener('click', function() {
+          fetch('/api/system_stats')
+              .then(response => response.json())
+              .then(data => {
+                  updateSystemStats(data.current);
+              })
+              .catch(error => console.error('Error fetching system stats:', error));
+      });
+      
+      // Handle window resize
+      window.addEventListener('resize', function() {
+          combinedSystemChart.resize();
+      });
+  });
+  </script>
+
+  <script>
+    // Function to toggle sidebar
+    function toggleSidebar() {
+      document.body.classList.toggle('toggle-sidebar');
+    }
+  
+    // Initialize dropdowns when the document is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize Bootstrap components
+      var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+      var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+        return new bootstrap.Dropdown(dropdownToggleEl)
+      })
+    });
+  </script>
+  
+  
+    <script>
+      // Threat filtering
+      document.addEventListener('DOMContentLoaded', function() {
+          const filterButtons = document.querySelectorAll('[data-filter]');
+          const threatRows = document.querySelectorAll('#threatsTable tbody tr[data-threat-type]');
+          const noResultsRow = document.querySelector('#threatsTable tbody tr.no-results');
+          
+          // Initialize filtering (show all threats by default)
+          document.querySelector('[data-filter="all"]').classList.add('active');
+          
+          filterButtons.forEach(button => {
+              button.addEventListener('click', function() {
+                  // Update active button
+                  filterButtons.forEach(btn => btn.classList.remove('active'));
+                  this.classList.add('active');
+                  
+                  const filterValue = this.getAttribute('data-filter');
+                  
+                  // Show/hide rows based on filter
+                  let visibleCount = 0;
+                  threatRows.forEach(row => {
+                      const rowType = row.getAttribute('data-threat-type');
+                      
+                      if (filterValue === 'all' || rowType === filterValue) {
+                          row.style.display = '';
+                          visibleCount++;
+                      } else {
+                          row.style.display = 'none';
+                      }
+                  });
+                  
+                  // Show/hide no results message
+                  if (visibleCount === 0) {
+                      noResultsRow.style.display = '';
+                  } else {
+                      noResultsRow.style.display = 'none';
+                  }
+              });
+          });
+          
+          // Trigger the "all" filter on page load to ensure proper initial state
+          document.querySelector('[data-filter="all"]').click();
+      });
+  </script>
+      
+      <!-- jQuery -->
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script src="{{ url_for('static', filename='vendor/apexcharts/apexcharts.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+      <!-- Socket.IO -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
+
+      <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+      <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+</body>

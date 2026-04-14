@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Admin - Dashboard - FilSha</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+
+<!--Facivons-->
+<link href="{{ url_for('static', filename='img/iconlogo2.png') }}" rel="icon">
+ 
+<!-- Google Fonts -->
+<link href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+<link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/quill/quill.snow.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='vendor/quill/quill.bubble.css') }}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+<!-- Bootstrap -->
+<link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+
+  <!-- Template Main CSS File -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+ 
+</head>
+<body>
+
+  <header id="header" class="header fixed-top d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center justify-content-between w-100">
+      <!-- Sidebar Toggle -->
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+  
+      <!-- Logo -->
+      <a href="{{ url_for('admin_dashboard') }}" class="logo d-flex align-items-center">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+        <span class="d-none d-lg-block">FilSha</span>
+      </a>
+  
+      <!-- Search Bar -->
+      <div class="search-bar ms-auto align-items-center">
+      </div><!-- End Search Bar -->
+    </div>
+      <nav class="header-nav ms-auto">
+        <ul class="d-flex align-items-center">
+  
+          <li class="nav-item d-block d-lg-none">
+            <a class="nav-link nav-icon search-bar-toggle " href="#">
+              <i class="bi bi-search"></i>
+            </a>
+          </li><!-- End Search Icon-->
+  
+          <li class="nav-item dropdown">
+
+            <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+              <i class="bi bi-bell"></i>
+              <span class="badge bg-primary badge-number inquiry-count">{{ unread_inquiry_count }}</span>
+            </a><!-- End Notification Icon -->
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+              <li class="dropdown-header">
+                <span id="notification-header">You have {{ unread_inquiry_count }} new inquiries</span>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#inquiryNotificationsModal"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              
+              <div id="notification-items">
+                <!-- Notification items will be loaded here via JavaScript -->
+              </div>
+
+              <li class="dropdown-footer">
+                <a href="#" id="mark-all-read">Mark all as read</a>
+              </li>
+
+            </ul><!-- End Notification Dropdown Items -->
+  
+          </li><!-- End Notification Nav -->
+          <li class="nav-item dropdown">
+
+            <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+              <i class="bi bi-chat-left-text"></i>
+              <span class="badge bg-success badge-number">2</span>
+            </a><!-- End Messages Icon -->
+  
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+              <li class="dropdown-header">
+                You have 2 new messages
+                <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li class="message-item">
+                <a href="#">
+                  <img src="assets/img/messages-1.jpg" alt="" class="rounded-circle">
+                  <div>
+                    <h4>Maria Hudson</h4>
+                    <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                    <p>4 hrs. ago</p>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li class="message-item">
+                <a href="#">
+                  <img src="assets/img/messages-2.jpg" alt="" class="rounded-circle">
+                  <div>
+                    <h4>Anna Nelson</h4>
+                    <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                    <p>6 hrs. ago</p>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li class="dropdown-footer">
+                <a href="#">Show all messages</a>
+              </li>
+  
+            </ul><!-- End Messages Dropdown Items -->
+  
+          </li><!-- End Messages Nav -->
+          <li class="nav-item dropdown pe-3">
+          
+  
+            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+              <img src="{{ url_for('static', filename='img/admin_pic.png') }}" alt="Profile" class="circle">
+              <span class="d-none d-md-block dropdown-toggle ps-2">{{ admin_username }}</span>
+            </a><!-- End Profile Image Icon -->
+
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+              <li class="dropdown-header">
+                <h6>{{ admin_username }}</h6>
+                <span>Admin</span>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                  <i class="bi bi-person"></i>
+                  <span>My Profile</span>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+  
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="{{ url_for('admin_logout') }}">
+                  <i class="bi bi-box-arrow-right"></i>
+                  <span>Sign Out</span>
+                </a>
+              </li>
+  
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </header><!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_dashboard') }}">
+          <i class="bi bi-grid"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin_inquiries') }}">
+          <i class="bi bi-envelope"></i>
+          <span>User's Query</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_add_user') }}">
+          <i class="bi bi-person-plus"></i>
+          <span>Add Users</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_activity_log') }}">
+          <i class="bi bi-person"></i>
+          <span>User's Activity Logs</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ url_for('admin_user_list') }}">
+          <i class="bi bi-person-lines-fill"></i>
+          <span>User Management</span>
+        </a>
+      </li>
+     
+
+  </aside><!-- End Sidebar-->
+
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h2>User's Query</h2>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Home</a></li>
+          <li class="breadcrumb-item active">User's Query</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash-message">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </div>
+      <div class="row">
+          <div class="col-lg-12">
+              <div class="card">
+                  <div class="card-body">
+                      <h5 class="card-title">User Inquiries</h5>
+                      
+                      <!-- Search and Filter Bar -->
+                      <div class="row mb-4">
+                          <div class="col-md-6">
+                              <div class="input-group">
+                                  <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                  <input type="text" class="form-control" id="mainTableSearch" placeholder="Search inquiries...">
+                              </div>
+                          </div>
+                          <div class="col-md-6 text-end">
+                              <div class="btn-group" role="group">
+                                  <button type="button" class="btn btn-outline-primary active" id="showAllBtn">All</button>
+                                  <button type="button" class="btn btn-outline-warning" id="showPendingBtn">Pending</button>
+                                  <button type="button" class="btn btn-outline-success" id="showResolvedBtn">Resolved</button>
+                              </div>
+                          </div>
+                      </div>
+                      
+                      <!-- Inquiries Table -->
+                      <div class="table-responsive">
+                          <table class="table table-bordered table-hover" id="inquiriesTable">
+                              <thead class="table-light">
+                                  <tr>
+                                      <th>#</th>
+                                      <th>Customer Name</th>
+                                      <th>Subject</th>
+                                      <th>Description</th>
+                                      <th>Status</th>
+                                      <th>Created At</th>
+                                      <th>Actions</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  {% for inquiry in inquiries %}
+                                  <tr class="{% if not inquiry.is_read %}table-warning{% endif %} inquiry-row" 
+                                      data-inquiry-id="{{ inquiry.id }}" 
+                                      data-status="{{ inquiry.status }}">
+                                      <td>{{ inquiry.id }}</td>
+                                      <td>{{ inquiry.username }}</td>
+                                      <td>{{ inquiry.subject }}</td>
+                                      <td>{{ inquiry.description }}</td>
+                                      <td>
+                                          <span class="badge {% if inquiry.status == 'Pending' %}bg-warning{% elif inquiry.status == 'Resolved' %}bg-success{% else %}bg-info{% endif %}">
+                                              {{ inquiry.status }}
+                                          </span>
+                                      </td>
+                                      <td>{{ inquiry.created_at }}</td>
+                                      <td>
+                                          {% if inquiry.status != 'Resolved' %}
+                                          <form method="POST" action="{{ url_for('resolve_inquiry', inquiry_id=inquiry.id) }}" style="display:inline;">
+                                              <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-circle"></i> Resolve</button>
+                                          </form>
+                                          {% endif %}
+                                          {% if inquiry.screenshot %}
+                                          <button type="button" class="btn btn-sm btn-info view-screenshot" data-bs-toggle="modal" data-bs-target="#screenshotModal" data-screenshot="{{ url_for('view_inquiry_screenshot', inquiry_id=inquiry.id) }}" title="View Screenshot">
+                                              <i class="bi bi-image"></i> Screenshot
+                                          </button>
+                                          {% endif %}
+                                          <form method="POST" action="{{ url_for('delete_inquiry', inquiry_id=inquiry.id) }}" style="display:inline;">
+                                              <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Delete</button>
+                                          </form>
+                                      </td>
+                                  </tr>
+                                  {% endfor %}
+                              </tbody>
+                          </table>
+                      </div>
+                      
+                      <!-- No Results Message -->
+                      <div id="noResultsMessage" class="text-center p-3 d-none">
+                          <i class="bi bi-search fs-1 text-muted"></i>
+                          <p class="mt-2">No inquiries found matching your search criteria.</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>FilSha</span></strong>. All Rights Reserved
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Inquiry Notifications Modal -->
+  <div class="modal fade" id="inquiryNotificationsModal" tabindex="-1" aria-labelledby="inquiryNotificationsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title" id="inquiryNotificationsModalLabel"><i class="bi bi-envelope me-2"></i>User Inquiries</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Search and Filter Bar -->
+          <div class="row mb-3">
+            <div class="col-md-8">
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" id="inquirySearchInput" placeholder="Search inquiries...">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <select class="form-select" id="modalStatusFilter">
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="resolved">Resolved</option>
+              </select>
+            </div>
+          </div>
+          
+          <!-- Table Container -->
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="inquiryNotificationsTable">
+              <thead class="table-light">
+                <tr>
+                  <th>#</th>
+                  <th>User</th>
+                  <th>Subject</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="inquiryNotificationsTableBody">
+                <!-- Inquiry notifications will be loaded here via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- No Results Message for Modal -->
+          <div id="modalNoResultsMessage" class="text-center p-3 d-none">
+            <i class="bi bi-search fs-1 text-muted"></i>
+            <p class="mt-2">No inquiries found matching your search criteria.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i>Close</button>
+          <button type="button" class="btn btn-primary" id="markAllInquiriesAsRead"><i class="bi bi-check-all me-1"></i>Mark All as Read</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- This duplicate modal has been removed to prevent ID conflicts -->
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='vendor/apexcharts/apexcharts.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/chart.js/chart.umd.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/echarts/echarts.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/quill/quill.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/simple-datatables/simple-datatables.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/tinymce/tinymce.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/php-email-form/validate.js') }}"></script>
+
+<!-- Template Main JS File -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+<!-- Template Main JS File -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+<!-- Main Table Inquiry Read Status and Search JavaScript -->
+<script>
+  $(document).ready(function() {
+    // Cache DOM elements for better performance
+    const $inquiriesTable = $('#inquiriesTable');
+    const $mainTableSearch = $('#mainTableSearch');
+    const $noResultsMessage = $('#noResultsMessage');
+    const $statusButtons = $('#showAllBtn, #showPendingBtn, #showResolvedBtn');
+    
+    // Prevent buttons and forms from triggering row click
+    $inquiriesTable.on('click', 'button, form, a, input, select, textarea', function(e) {
+      e.stopPropagation();
+    });
+    
+    // Mark inquiry as read when clicked in the main table
+    $inquiriesTable.on('click', '.table-warning', function(e) {
+      // Only mark as read if clicking on the row itself, not interactive elements
+      if ($(e.target).is('button, a, form, input, select, textarea') || 
+          $(e.target).closest('button, a, form, input, select, textarea').length > 0) {
+        return;
+      }
+      
+      const inquiryId = $(this).data('inquiry-id');
+      markInquiryAsRead(inquiryId, true); // true = reload page
+    });
+    
+    // Unified filter function for main table
+    function filterMainTable() {
+      const searchValue = $mainTableSearch.val().toLowerCase().trim();
+      const currentFilter = $('.btn-group .btn.active').attr('id') || 'showAllBtn';
+      let visibleRows = 0;
+      
+      $inquiriesTable.find('tbody tr').each(function() {
+        const $row = $(this);
+        const rowText = $row.text().toLowerCase();
+        const rowStatus = $row.data('status').toLowerCase();
+        let showByStatus = true;
+        
+        // Apply status filter
+        if (currentFilter === 'showPendingBtn' && rowStatus !== 'pending') {
+          showByStatus = false;
+        } else if (currentFilter === 'showResolvedBtn' && rowStatus !== 'resolved') {
+          showByStatus = false;
+        }
+        
+        // Apply text search filter
+        const showBySearch = !searchValue || rowText.includes(searchValue);
+        
+        // Show/hide row based on both filters
+        const shouldShow = showByStatus && showBySearch;
+        $row.toggle(shouldShow);
+        
+        if (shouldShow) visibleRows++;
+      });
+      
+      // Show/hide no results message
+      $noResultsMessage.toggleClass('d-none', visibleRows > 0);
+    }
+    
+    // Main table search functionality with debounce
+    let searchTimeout;
+    $mainTableSearch.on('keyup', function() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(filterMainTable, 300); // 300ms debounce
+    });
+    
+    // Status filter buttons
+    $statusButtons.click(function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Update active button
+      $statusButtons.removeClass('active');
+      $(this).addClass('active');
+      
+      filterMainTable();
+    });
+  });
+</script>
+
+<!-- Inquiry Notifications JavaScript -->
+<script>
+  $(document).ready(function() {
+    // Cache DOM elements
+    const $notificationItems = $('#notification-items');
+    const $inquiryNotificationsTableBody = $('#inquiryNotificationsTableBody');
+    const $inquirySearchInput = $('#inquirySearchInput');
+    const $modalStatusFilter = $('#modalStatusFilter');
+    const $modalNoResultsMessage = $('#modalNoResultsMessage');
+    
+    // Function to load inquiry notifications
+    function loadInquiryNotifications() {
+      $.ajax({
+        url: '/admin/get_inquiry_notifications',
+        type: 'GET',
+        success: function(response) {
+          updateNotificationUI(response);
+        },
+        error: function(error) {
+          console.error('Error loading inquiry notifications:', error);
+        }
+      });
+    }
+    
+    // Update UI with notification data
+    function updateNotificationUI(response) {
+      // Update notification count
+      $('.inquiry-count').text(response.unread_count);
+      $('#notification-header').text(`You have ${response.unread_count} new inquiries`);
+      
+      // Update notification dropdown
+      updateNotificationDropdown(response.inquiries.slice(0, 5));
+      
+      // Update modal table
+      updateModalTable(response.inquiries);
+    }
+    
+    // Update notification dropdown items
+    function updateNotificationDropdown(inquiries) {
+      if (inquiries.length === 0) {
+        $notificationItems.html('<li class="notification-item"><div><p>No new inquiries</p></div></li>');
+        return;
+      }
+      
+      const notificationItems = inquiries.map(inquiry => {
+        const isRead = inquiry.is_read ? '' : 'unread-notification';
+        const date = new Date(inquiry.created_at).toLocaleString();
+        return `
+          <li class="notification-item ${isRead}">
+            <i class="bi bi-question-circle text-info"></i>
+            <div>
+              <h4>${escapeHtml(inquiry.subject)}</h4>
+              <p>From: ${escapeHtml(inquiry.username)}</p>
+              <p>${date}</p>
+            </div>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+        `;
+      }).join('');
+      
+      $notificationItems.html(notificationItems);
+    }
+    
+    // Update modal table
+    function updateModalTable(inquiries) {
+      if (inquiries.length === 0) {
+        $inquiryNotificationsTableBody.html(`
+          <tr>
+            <td colspan="7" class="text-center">No inquiries found</td>
+          </tr>
+        `);
+        return;
+      }
+      
+      const tableRows = inquiries.map(inquiry => {
+        const isRead = inquiry.is_read ? '' : 'table-warning';
+        const formattedDate = new Date(inquiry.created_at).toLocaleString();
+        const statusClass = getStatusClass(inquiry.status);
+        const resolveButton = inquiry.status !== 'Resolved' ? 
+          `<button class="btn btn-sm btn-success resolve-inquiry" data-inquiry-id="${inquiry.id}">
+            <i class="bi bi-check-circle"></i> Resolve
+          </button>` : '';
+        
+        return `
+          <tr class="${isRead}" data-inquiry-id="${inquiry.id}" data-status="${inquiry.status.toLowerCase()}">
+            <td>${inquiry.id}</td>
+            <td>${escapeHtml(inquiry.username)}</td>
+            <td>${escapeHtml(inquiry.subject)}</td>
+            <td>${escapeHtml(inquiry.description)}</td>
+            <td><span class="badge ${statusClass}">${inquiry.status}</span></td>
+            <td>${formattedDate}</td>
+            <td>
+              ${resolveButton}
+              <button class="btn btn-sm btn-danger delete-inquiry" data-inquiry-id="${inquiry.id}">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      
+      $inquiryNotificationsTableBody.html(tableRows);
+    }
+    
+    // Helper function to get status class
+    function getStatusClass(status) {
+      switch (status) {
+        case 'Pending': return 'bg-warning';
+        case 'Resolved': return 'bg-success';
+        default: return 'bg-info';
+      }
+    }
+    
+    // Helper function to escape HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // Mark inquiry as read
+    function markInquiryAsRead(inquiryId, reloadPage = false) {
+      $.ajax({
+        url: `/admin/mark_inquiry_as_read/${inquiryId}`,
+        type: 'POST',
+        success: function() {
+          if (reloadPage) {
+            location.reload();
+          } else {
+            loadInquiryNotifications();
+          }
+        }
+      });
+    }
+    
+    // Load notifications on page load
+    loadInquiryNotifications();
+    
+    // Refresh notifications every 30 seconds
+    setInterval(loadInquiryNotifications, 30000);
+    
+    // Mark inquiry as read when clicked in modal table
+    $inquiryNotificationsTableBody.on('click', 'tr', function(e) {
+      if ($(e.target).is('button, a, form, input, select, textarea') || 
+          $(e.target).closest('button, a, form, input, select, textarea').length > 0) {
+        return;
+      }
+      
+      const inquiryId = $(this).data('inquiry-id');
+      markInquiryAsRead(inquiryId);
+    });
+    
+    // Mark all inquiries as read
+    $('#mark-all-read, #markAllInquiriesAsRead').click(function(e) {
+      e.preventDefault();
+      $.ajax({
+        url: '/admin/mark_all_inquiries_as_read',
+        type: 'POST',
+        success: function() {
+          loadInquiryNotifications();
+        }
+      });
+    });
+    
+    // Modal search and filter functionality with debounce
+    let modalSearchTimeout;
+    function filterModalTable() {
+      const searchValue = $inquirySearchInput.val().toLowerCase().trim();
+      const statusFilter = $modalStatusFilter.val().toLowerCase();
+      let visibleRows = 0;
+      
+      $inquiryNotificationsTableBody.find('tr').each(function() {
+        const $row = $(this);
+        const rowText = $row.text().toLowerCase();
+        const rowStatus = $row.data('status');
+        let showRow = true;
+        
+        // Apply status filter
+        if (statusFilter !== 'all' && rowStatus !== statusFilter) {
+          showRow = false;
+        }
+        
+        // Apply text search filter
+        if (searchValue && !rowText.includes(searchValue)) {
+          showRow = false;
+        }
+        
+        // Show/hide row
+        $row.toggle(showRow);
+        if (showRow) visibleRows++;
+      });
+      
+      // Show/hide no results message
+      $modalNoResultsMessage.toggleClass('d-none', visibleRows > 0);
+    }
+    
+    $inquirySearchInput.on('keyup', function() {
+      clearTimeout(modalSearchTimeout);
+      modalSearchTimeout = setTimeout(filterModalTable, 300);
+    });
+    
+    $modalStatusFilter.on('change', filterModalTable);
+    
+    // Resolve inquiry
+    $(document).on('click', '.resolve-inquiry', function(e) {
+      e.stopPropagation();
+      const inquiryId = $(this).data('inquiry-id');
+      $.ajax({
+        url: `/admin/resolve_inquiry/${inquiryId}`,
+        type: 'POST',
+        success: function() {
+          loadInquiryNotifications();
+        }
+      });
+    });
+    
+    // Delete inquiry with confirmation
+    $(document).on('click', '.delete-inquiry', function(e) {
+      e.stopPropagation();
+      const inquiryId = $(this).data('inquiry-id');
+      
+      if (confirm('Are you sure you want to delete this inquiry? This action cannot be undone.')) {
+        $.ajax({
+          url: `/admin/delete_inquiry/${inquiryId}`,
+          type: 'POST',
+          success: function() {
+            loadInquiryNotifications();
+          }
+        });
+      }
+    });
+  });
+  
+  // Screenshot modal functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const screenshotModal = document.getElementById('screenshotModal');
+    const screenshotImage = document.getElementById('screenshotImage');
+    
+    if (!screenshotModal || !screenshotImage) return;
+    
+    // Set screenshot image source when modal is shown
+    document.querySelectorAll('.view-screenshot').forEach(button => {
+      button.addEventListener('click', function() {
+        const screenshotUrl = this.getAttribute('data-screenshot');
+        if (screenshotUrl) {
+          screenshotImage.src = screenshotUrl;
+        }
+      });
+    });
+    
+    // Clear image source when modal is closed
+    screenshotModal.addEventListener('hidden.bs.modal', function() {
+      screenshotImage.src = '';
+    });
+  });
+</script>
+
+<!-- Screenshot Modal -->  
+<div class="modal fade" id="screenshotModal" tabindex="-1" aria-labelledby="screenshotModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="screenshotModalLabel">Screenshot</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="screenshotImage" src="" class="img-fluid" alt="Screenshot" style="max-height: 80vh;">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Vendor JS Files -->
+<script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/simple-datatables/simple-datatables.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/apexcharts/apexcharts.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/chart.js/chart.umd.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/echarts/echarts.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/quill/quill.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/tinymce/tinymce.min.js') }}"></script>
+
+<!-- Template Main JS File -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

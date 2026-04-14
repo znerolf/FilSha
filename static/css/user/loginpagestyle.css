@@ -1,0 +1,756 @@
+/* General Styles */
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+}
+
+body {
+  background: linear-gradient(-45deg, #cae8ff, #e0f2fe, #f0f9ff);
+  background-size: 400% 400%;
+  animation: gradient 8s ease infinite;
+  height: 100vh;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Navbar */
+.navbar {
+  background-color: rgba(25, 59, 103, 0.9);
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  body > .container-fluid > .row {
+    margin-top: -60px !important;
+  }
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: white !important;
+  text-decoration: none;
+}
+
+.navbar-logo {
+  height: 45px;
+  width: auto;
+  margin-right: 10px;
+  transition: transform 0.3s ease;
+}
+
+.navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Navbar buttons */
+.navbar .btn {
+  padding: 0.5rem 1.2rem;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+/* Mobile adjustments */
+@media (max-width: 992px) {
+  .navbar {
+    padding: 0.8rem 1rem;
+  }
+  
+  .navbar-brand {
+    font-size: 1.5rem;
+  }
+  
+  .navbar-logo {
+    height: 35px;
+  }
+  
+  .navbar-collapse {
+    padding-top: 1rem;
+  }
+  
+  .navbar .ms-auto.d-flex {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  .navbar .btn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .navbar .btn-secondary.me-2 {
+    margin-right: 0 !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar-brand {
+    font-size: 1.3rem;
+  }
+  
+  .navbar-logo {
+    height: 30px;
+    margin-right: 8px;
+  }
+}
+
+/* Buttons */
+.btn-primary, .btn-secondary, .btn-login {
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+  background-color: #3b82f6;
+  border: none;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-secondary {
+  background-color: #193b67;
+  border: none;
+  color: white;
+}
+
+.btn-login {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  width: 100%;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-login i {
+  font-size: 1.1rem;
+}
+
+.btn-login:hover {
+  background-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary:hover {
+  background-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Button Loading State - Fixed */
+.btn-login.loading {
+  position: relative;
+  pointer-events: none;
+  color: transparent !important; /* Hide text but maintain space */
+  min-height: 48px; /* Set a fixed minimum height */
+  height: auto; /* Allow it to grow if needed */
+}
+
+.btn-login.loading::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 50%;
+  left: 50%;
+  margin-top: -10px;
+  margin-left: -10px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  animation: spin 0.8s infinite linear;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Layout */
+.container-fluid {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+.row {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+/* Left Section: Background Image */
+/* Improved Background Image with smaller PC sizing */
+.bg-image {
+  flex: 1;
+  background-size: 50%; /* Reduced from 80% to 60% for desktop */
+  background-position: center center;
+  opacity: 0.95;
+  transition: background-size 0.3s ease;
+  position: relative;
+}
+
+.lottie-logo {
+  width: 500px;
+  height: 500px;
+}
+
+@media (max-width: 768px) {
+  .lottie-logo {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+
+/* Media queries for responsive adjustments */
+@media (min-width: 1400px) {
+  .bg-image {
+    background-size: 50%; /* Even smaller for very large screens */
+  }
+}
+
+@media (max-width: 1200px) {
+  .bg-image {
+    background-size: 65%;
+  }
+}
+
+@media (max-width: 992px) {
+  .bg-image {
+    background-size: 70%;
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .bg-image {
+    height: 180px;
+    flex: none;
+    width: 100%;
+    background-size: 70%;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Small mobile adjustments */
+@media (max-width: 480px) {
+  .bg-image {
+    height: 150px;
+    background-size: 75%;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  .bg-image {
+    height: 120px;
+    background-size: 80%;
+  }
+}
+
+/* For very tall screens, ensure the image looks good too */
+@media (min-height: 900px) {
+  .bg-image {
+    background-size: 50%; /* Smaller size for tall screens */
+  }
+}
+
+/* For very wide but short screens (like landscape mode) */
+@media (max-height: 600px) and (min-width: 768px) {
+  .bg-image {
+    background-size: 45%; /* Even smaller for landscape mode */
+  }
+}
+
+/* Right Section: Login Form */
+.form-login {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-login:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #193b67;
+  margin-bottom: 0.5rem;
+}
+
+.subtext {
+  font-size: 1rem;
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
+/* Input Fields */
+.form-control {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 1.2rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  outline: none;
+  animation: pulse 1s ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+/* Input Group Styling */
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  font-size: 1.2rem;
+  z-index: 10;
+}
+
+.input-group .form-control,
+.password-wrapper .form-control {
+  padding-left: 40px;
+}
+
+/* Password Toggle */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.password-wrapper .form-control {
+  padding-right: 40px; /* Space for the icon */
+  margin-bottom: 0;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #64748b;
+  transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+  color: #3b82f6;
+}
+
+/* Remember Me & Forgot Password */
+.remember-forgot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.form-check-input {
+  width: 16px;
+  height: 16px;
+  margin-top: 0.1em;
+  background-color: #fff;
+  border: 1px solid #cbd5e1;
+}
+
+.form-check-input:checked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.form-check-label {
+  color: #64748b;
+  margin-left: 0.25rem;
+}
+
+.forgot-link {
+  color: #3b82f6;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.forgot-link:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* Flash Message Container */
+.flash-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: transparent;
+  color: white;
+  pointer-events: none;
+  animation: slideDown 0.5s ease-in-out, fadeOut 0.5s ease-in-out 2.5s forwards;
+}
+
+/* Flash Message */
+.flash-message {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+  max-width: 400px;
+  width: 90%;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: rgba(59, 130, 246, 0.9);
+  position: relative; /* Added to contain the absolutely positioned loading bar */
+  overflow: hidden; /* Keeps the loading bar from extending outside */
+}
+
+/* Loading Bar */
+.flash-message::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.5);
+  animation: loadingBar 3s linear forwards;
+  border-radius: 0 0 0 0; /* Removed border radius on loading bar */
+}
+
+/* Slide Down Animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade Out Animation */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Loading Bar Animation */
+@keyframes loadingBar {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bg-image {
+    height: 200px;
+    width: 100%;
+    background-size: 50%;
+    background-position: center;
+  }
+  
+  .form-login {
+    margin-top: 2rem;
+  }
+  
+  .remember-forgot {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .forgot-link {
+    margin-left: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-primary, .btn-secondary, .btn-login {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .navbar {
+    padding: 0.8rem 1rem;
+  }
+  
+  .navbar-brand {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-height: 800px) and (max-width: 480px) {
+  .container-fluid {
+    justify-content: flex-start;
+    padding-top: 2rem;
+  }
+
+  .form-login {
+    margin-top: auto;
+    margin-bottom: auto;
+    padding: 1.5rem;
+  }
+}
+
+
+
+/* Improved Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .container-fluid {
+    padding: 0;
+  }
+
+  .bg-image {
+    height: 150px;
+    width: 100%;
+    background-size: contain;
+    background-position: center;
+    margin-bottom: 1rem;
+  }
+  
+  .form-login {
+    width: 90%;
+    max-width: 350px;
+    padding: 1.8rem;
+    margin: 0 auto;
+  }
+  
+  .remember-forgot {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .forgot-link {
+    text-align: right;
+    margin-left: 0;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  .subtext {
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+  }
+}
+
+/* Additional improvements for smaller screens */
+@media (max-width: 480px) {
+  body {
+    overflow-y: auto;
+  }
+
+  .container-fluid {
+    min-height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .navbar {
+    padding: 0.8rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .navbar-brand {
+    font-size: 1.5rem;
+  }
+  
+  .btn-primary, .btn-secondary {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .bg-image {
+    height: 120px;
+    margin-top: 1rem;
+  }
+  
+  .form-login {
+    padding: 1.5rem;
+    margin: 0 auto 2rem auto;
+    width: 90%;
+  }
+  
+  .password-wrapper, .input-group {
+    margin-bottom: 1rem;
+  }
+  
+  .btn-login {
+    padding: 0.6rem 1.5rem;
+  }
+}
+
+/* Fix for very small screens */
+@media (max-width: 360px) {
+  .navbar .ms-auto {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .remember-forgot {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+  
+  .forgot-link {
+    text-align: left;
+  }
+  
+  .form-login {
+    padding: 1.2rem;
+  }
+}
+
+/* Fix for landscape orientation on mobile */
+/* Additional mobile improvements */
+@media (max-width: 480px) {
+  .btn-primary, .btn-secondary {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .navbar-brand {
+    font-size: 1.5rem;
+  }
+  
+  .form-login {
+    padding: 1.5rem;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+  }
+  
+  .subtext {
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  /* Make buttons stack on very small screens */
+  @media (max-width: 360px) {
+    .navbar .ms-auto {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    
+    .btn-primary {
+      margin-right: 0 !important;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
