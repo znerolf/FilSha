@@ -16,7 +16,8 @@ instance/
 
 # Virtual Environment
 venv/
-env/
+.env
+.env/
 ENV/
 
 # IDE
