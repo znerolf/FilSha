@@ -46,7 +46,7 @@ U-P - "florenz.olarte@gmail.com" - "olarte"
 # 🚀 Installation
 
 ```bash
-git clone https://github.com/yourusername/filsha.git
+git clone https://github.com/znerolf/filsha.git
 cd filsha
 pip install -r requirements.txt
 python app.py
